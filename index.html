@@ -224,6 +224,14 @@ body.dragging{cursor:grabbing;user-select:none}
 .ro .chk,.ro [data-b]:not([data-b^="g:"]){pointer-events:none}
 .ro [data-act=newProj],.ro [data-act=dupProj],.ro [data-act=delProj],.ro [data-act=importProj],.ro [data-act=addScene],.ro [data-act=addShot],.ro [data-act=dupScene],.ro [data-act=delScene],.ro [data-act=addDay],.ro [data-act=dupDay],.ro [data-act=delDay],.ro [data-act=noteMenu],.ro [data-act=toggleLive],.ro [data-act=completeCur],.ro [data-act=resetDone],.ro [data-act=delShot],.ro [data-act=dupShot],.ro [data-act=exclShot],.ro [data-act=delNote],.ro [data-act=dupNote],.ro [data-act=stripAdd],.ro [data-act=stripRem],.ro [data-act=restore],.ro [data-act=boardUp],.ro [data-act=boardDel]{display:none!important}
 @media (max-width:820px){.syncpill{padding:5px 8px}.syncpill span{display:none}}
+.help h3{font-size:15px;margin:20px 0 8px;color:var(--acc)}
+.help section{scroll-margin-top:8px}
+.help .lead{color:var(--mut);margin:0 0 8px}
+.help ol,.help ul{margin:0;padding-left:22px}
+.help li{margin:6px 0;color:#d3d6dc;line-height:1.45}
+.help li ul{margin-top:4px}
+.help b{color:var(--tx)}
+.help .k{display:inline-block;background:var(--s3);border:1px solid var(--line);border-radius:6px;padding:0 7px;font-weight:700;font-size:12px;color:var(--tx);white-space:nowrap}
 #print{display:none}
 @media print{
   #app,#modal,#toast{display:none!important}
@@ -324,6 +332,7 @@ clap:'<path d="M4 11v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8H4z"/><path d="M4 11l-.5
 clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
 truck:'<path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
 coffee:'<path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/>',
+help:'<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
 tool:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
 };
 const ic=(n,s=18)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
@@ -470,7 +479,7 @@ function viewHome(){
    <div class="meta">Edited ${new Date(p.updated).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>
    <div class="pc-act"><button class="iconbtn sm mute" title="Duplicate" data-act="dupProj" data-id="${p.id}">${ic('copy',15)}</button><button class="iconbtn sm mute" title="Delete" data-act="delProj" data-id="${p.id}">${ic('trash',15)}</button></div>
   </div>`}).join('');
- return `<header class="top"><div class="brand"><div class="logo">${ic('clap',17)}</div>Shotday</div><div class="sp"></div>${syncPill()}
+ return `<header class="top"><div class="brand"><div class="logo">${ic('clap',17)}</div>Shotday</div><div class="sp"></div>${syncPill()}<button class="iconbtn" data-act="help" title="How to use Shotday">${ic('help',19)}</button>
   <button class="btn ghost" data-act="importProj">${ic('upload',15)} Import</button>
   <button class="btn pri" data-act="newProj">${ic('plus',15)} New Project</button></header>
   <main class="home"><h1>Projects</h1><div class="pgrid">${cards}<button class="pcard new" data-act="newProj">${ic('plus',28)}<span>New Project</span></button></div></main>`;
@@ -493,7 +502,7 @@ function viewProject(){
    <div class="ss">Call ${fmtClock(toMin(d.call),false)} · Wrap ${fmtClock(toMin(d.wrap),false)}</div></div></div>`}).join('')
   :`<div class="empty" style="margin:8px">No shoot days yet.<br><br><button class="btn pri" data-act="addDay">${ic('plus',15)} Add Shoot Day</button></div>`;
  }
- return `<header class="top"><button class="iconbtn" data-act="home" title="Projects">${ic('back',20)}</button><div class="ptitle">${esc(p.name)}</div><div class="sp"></div>${syncPill()}
+ return `<header class="top"><button class="iconbtn" data-act="home" title="Projects">${ic('back',20)}</button><div class="ptitle">${esc(p.name)}</div><div class="sp"></div>${syncPill()}<button class="iconbtn" data-act="help" title="How to use Shotday">${ic('help',19)}</button>
   <button class="iconbtn" data-act="export" title="Export & share">${ic('share',19)}</button>
   <button class="iconbtn" data-act="settings" title="Shot categories & settings">${ic('gear',19)}</button></header>
  <div class="proj ${S.ui.pane==='main'?'show-main':''}">
@@ -605,7 +614,7 @@ function viewDay(p){
 function renderModal(){
  const r=$('#modal');if(!M){r.innerHTML='';return}
  let body='',cls='';
- try{switch(M.type){case 'shot':body=mShot();break;case 'note':body=mNote();cls='small';break;case 'settings':body=mSettings();cls='wide';break;case 'export':body=mExport();cls='small';break;case 'strip':body=mStrip();break;case 'notes':body=mNotes();cls='small';break;case 'sync':body=mSync();break}}catch(e){console.error(e)}
+ try{switch(M.type){case 'shot':body=mShot();break;case 'note':body=mNote();cls='small';break;case 'settings':body=mSettings();cls='wide';break;case 'export':body=mExport();cls='small';break;case 'strip':body=mStrip();break;case 'notes':body=mNotes();cls='small';break;case 'sync':body=mSync();break;case 'help':body=mHelp();cls='wide';break}}catch(e){console.error(e)}
  if(!body){M=null;r.innerHTML='';return}
  r.innerHTML=`<div class="scrim" data-act="closeModal"></div><div class="sheet ${cls}">${body}</div>`;
  r.querySelectorAll('[data-sort]').forEach(b=>sortable(b));
@@ -827,7 +836,7 @@ function printDay(p,d){const pl=dayPlan(p,d);
  doPrint(h)}
 
 /* ============ crew sync (Google Drive via Apps Script) ============ */
-const RO_OK=new Set(['home','openProj','tab','pane','view','selScene','selDay','gotoDay','closeModal','export','exp','editShot','editNote','strip','settings','syncPanel','syncConnect','syncDisconnect','copyLink']);
+const RO_OK=new Set(['help','helpGo','home','openProj','tab','pane','view','selScene','selDay','gotoDay','closeModal','export','exp','editShot','editNote','strip','settings','syncPanel','syncConnect','syncDisconnect','copyLink']);
 let needsRender=false;
 const isTyping=()=>{const a=document.activeElement;return !!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))};
 function softRender(){if(dragging||isTyping()){needsRender=true;return}renderApp();if(M)renderModal()}
@@ -873,6 +882,7 @@ const Sync={
    const r=await syncCall({a:'hello'});
    if(r.error){this.status('error',r.error==='bad_code'?'That code was not accepted. Check the link or code.':r.error);if(M&&M.type==='sync')renderModal();return}
    SY.role=r.role;SY.links=r.links?pageLinks(r.links):null;persistSync();applyRole();render();
+   if(SY.role==='view'&&!SY.helpSeen&&!M){SY.helpSeen=1;persistSync();M={type:'help'};renderModal()}
    await this.pull(true);
   }catch(e){this.status('offline',"Can't reach the crew server. Changes are kept on this device.")}
   this.timer=setInterval(()=>{if(!document.hidden)this.pull()},4000);
@@ -985,6 +995,62 @@ Object.assign(A,{
   Sync.status('off');applyRole();render();
  },
  copyLink(el){const v=el.dataset.v;(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>toast('Link copied')).catch(()=>prompt('Copy this link:',v))},
+});
+
+/* ============ help ============ */
+function mHelp(){
+ const k=t=>`<span class="k">${t}</span>`;
+ const crew=`<section id="h-crew"><h3>For crew</h3>
+  <p class="lead">This is the shoot's live schedule. It updates on its own within a few seconds whenever the 1st AD or producer changes something. You don't need to refresh.</p>
+  <ul><li><b>Shoot Days</b> shows today's schedule, minute by minute. The shot with the <b>green outline</b> is the one being shot now.</li>
+  <li>The <b>Shot Clock</b> and <b>Wrap Clock</b> show whether the day is running ahead (green, T−) or behind (red, T+).</li>
+  <li><b>Shot List</b> has every scene and shot. Tap a shot to see its details and storyboard.</li>
+  <li>Your link is <b>view only</b>, so you can look at anything but not change it.</li>
+  <li><b>Tip:</b> in Safari, tap ${k('Share')} → ${k('Add to Home Screen')} to keep Shotday on your phone like an app.</li></ul></section>`;
+ return hd('How to use Shotday','Shot lists, shoot days and Live Mode')+`<div class="sheet-body help">
+  <div class="pills" style="margin-bottom:4px">${[['h-crew','Crew'],['h-proj','Projects'],['h-list','Shot list'],['h-day','Shoot day'],['h-live','Live Mode'],['h-share','Share & export'],['h-set','Settings']].map(([id,t])=>`<button class="pill" data-act="helpGo" data-v="${id}">${t}</button>`).join('')}</div>
+  ${Sync.ro()?crew:''}
+  <section id="h-proj"><h3>1. Projects</h3><ul>
+   <li>On the <b>Projects</b> screen, click ${k('+ New Project')} and give it a name.</li>
+   <li>Inside a project, ${k('‹')} goes back to your projects, the <b>gear</b> opens settings and the <b>share icon</b> exports.</li></ul></section>
+  <section id="h-list"><h3>2. Build the shot list</h3><p class="lead">Open the <b>Shot List</b> tab.</p><ol>
+   <li>Click ${k('+')} next to <b>Scenes</b>. Fill in the scene number, INT/EXT, location, time of day, pages and cast numbers.</li>
+   <li>Click ${k('+ Shot')}. In the shot editor, set:<ul>
+    <li><b>Nickname and description</b>: what the shot is.</li>
+    <li><b>Size, angle, movement, lens</b>: pick from the list or type your own.</li>
+    <li><b>Setup and camera</b>: shots that share a lighting setup get the same setup number.</li>
+    <li><b>Time estimate</b>: use the 5/10/15… buttons or −5/+5. Set it to 0 for an optional shot that shouldn't use up time.</li>
+    <li><b>Gear, flag ★ and color</b>: for must-haves and priorities.</li>
+    <li><b>Link with next shot</b>: for A and B camera shooting at once. The two shots share one time slot.</li>
+    <li><b>Storyboard</b>: add an image, or paste one.</li></ul></li>
+   <li>Shots are numbered automatically: 1A, 1B, 1C…</li>
+   <li>Drag the ${k('═')} handle on the left to reorder scenes or shots.</li>
+   <li>The <b>grid icon</b> switches to a storyboard view.</li></ol></section>
+  <section id="h-day"><h3>3. Schedule a shoot day</h3><p class="lead">Open the <b>Shoot Days</b> tab.</p><ol>
+   <li>Click ${k('+')} to add a day. Set the date and the <b>Call</b>, <b>Lunch</b> and <b>Wrap</b> times.</li>
+   <li>The <b>Stripboard</b> opens. Click ${k('+ Add')} on each scene you're shooting that day, then drag them into shooting order.</li>
+   <li>Every shot now has a start time. Drag any row to change the order, and the times update.</li>
+   <li>Click ${k('Note')} to add Setup, <b>Lunch</b> (placed at your lunch time automatically), Company Move, a Break or your own note.</li>
+   <li>The bar at the top shows scheduled time against the time you have. It <b>glows red</b> when you're over.</li></ol></section>
+  <section id="h-live"><h3>4. On the day: Live Mode</h3><ul>
+   <li>Live Mode turns on by itself at call time on the shoot date, or you can click ${k('Go Live')}.</li>
+   <li><b>Shot Clock</b>: <span style="color:var(--red);font-weight:700">T+10</span> means you're 10 minutes behind on the current shot. <span style="color:var(--grn);font-weight:700">T−5</span> means 5 minutes ahead.</li>
+   <li><b>Wrap Clock</b>: when you'll wrap at this pace, compared with your planned wrap.</li>
+   <li>Click ${k('✓ Complete')} when a shot is done, or tap the circle on any row. The remaining times update to projected times.</li>
+   <li>Your crew sees all of this live on their phones.</li></ul></section>
+  <section id="h-share"><h3>5. Share and export</h3><ul>
+   <li>Click the <b>Live</b> button at the top. Copy the <b>crew link (view only)</b> for the crew, or the <b>editor link</b> for anyone who should make changes. Treat the editor link like a password.</li>
+   <li>The <b>share icon</b> gives you a PDF of the day's schedule or the shot list, a CSV for spreadsheets, or a project file for backup.</li></ul></section>
+  <section id="h-set"><h3>6. Customize</h3><ul>
+   <li>The <b>gear</b> turns shot details on or off, such as lens or cast.</li>
+   <li>Edit the pick lists there: shot sizes, movements, lenses, gear and cameras.</li>
+   <li>You can also change the default shot length.</li></ul></section>
+  ${Sync.ro()?'':crew}
+ </div><div class="sheet-ft"><div class="sp"></div><button class="btn pri" data-act="closeModal">Got it</button></div>`;
+}
+Object.assign(A,{
+ help(){M={type:'help'};renderModal()},
+ helpGo(el){const t=document.getElementById(el.dataset.v);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},
 });
 
 /* ============ events ============ */
