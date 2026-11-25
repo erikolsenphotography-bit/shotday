@@ -1,0 +1,1041 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e0f11">
+<meta name="sd-code" content="<?= code ?>">
+<meta name="sd-server" content="https://script.google.com/macros/s/AKfycbyeOKoh2Bl4xjtJ8UVrW3svcm8X96UaR3VnAJK7vsWRoUIvuc9NzQX5Y7v-VbaRMdI/exec">
+<title>Shotday — Shot Lists & Shoot Days</title>
+<style>
+:root{--bg:#0e0f11;--s1:#16171a;--s2:#1c1d21;--s3:#26272d;--line:#2d2f35;--tx:#eef0f3;--mut:#8d929c;--dim:#5b5f68;--acc:#ff9f0a;--grn:#30d158;--red:#ff453a;--blu:#0a84ff}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:14px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--s3);border:1px solid transparent;border-radius:8px;padding:7px 9px;outline:none;min-width:0}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);background:#2b2c32}
+input[type=time],input[type=date]{color-scheme:dark}
+textarea{resize:vertical;width:100%}
+.ic{flex:none;display:block}
+.sp{flex:1}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column}
+.top{height:52px;display:flex;align-items:center;gap:6px;padding:0 10px;background:rgba(22,23,26,.94);border-bottom:1px solid var(--line);flex:none}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.01em;padding-left:4px}
+.logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(145deg,#ffb340,#ff7a00);display:grid;place-items:center;color:#1a0f00}
+.ptitle{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:9px;padding:7px 12px;background:var(--s3);font-weight:600;font-size:13px;white-space:nowrap}
+.btn:hover{background:#30323a}
+.btn.pri{background:var(--acc);color:#1a1000}.btn.pri:hover{background:#ffb02e}
+.btn.live{background:var(--grn);color:#00260b}
+.btn.danger{color:var(--red)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.btn.ghost{background:transparent;color:var(--acc)}.btn.ghost:hover{background:var(--s3)}
+.iconbtn{width:34px;height:34px;display:inline-grid;place-items:center;border:0;border-radius:9px;background:transparent;color:var(--acc);flex:none}
+.iconbtn:hover{background:var(--s3)}
+.iconbtn.sm{width:28px;height:28px}
+.iconbtn.mute{color:var(--mut)}
+.mob{display:none!important}
+
+/* home */
+.home{flex:1;overflow:auto;padding:28px clamp(16px,4vw,48px) 60px}
+.home h1{font-size:28px;margin:0 0 18px;letter-spacing:-.02em}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.pcard{position:relative;text-align:left;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:16px;min-height:150px;display:flex;flex-direction:column;gap:6px}
+.pcard:hover{border-color:#3d4048;background:var(--s2)}
+.pcard .pc-art{height:52px;border-radius:10px;margin:-4px -4px 6px;background:linear-gradient(120deg,#2a1d0a,#1a1b20 70%);display:flex;align-items:flex-end;padding:8px;gap:3px}
+.pcard .pc-art i{display:block;width:6px;border-radius:2px;background:var(--acc);opacity:.75}
+.pcard h3{margin:0;font-size:16px}
+.pcard .meta{color:var(--mut);font-size:12px}
+.pcard .pc-act{position:absolute;top:10px;right:10px;display:flex;gap:2px;opacity:0;transition:.15s}
+.pcard:hover .pc-act{opacity:1}
+.pcard.new{align-items:center;justify-content:center;color:var(--acc);border-style:dashed;font-weight:600}
+
+/* project layout */
+.proj{flex:1;display:flex;min-height:0}
+.side{width:330px;flex:none;background:var(--s1);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.seg{display:flex;margin:10px;background:var(--s3);border-radius:10px;padding:3px}
+.seg button{flex:1;border:0;background:transparent;border-radius:8px;padding:6px;font-weight:600;font-size:13px;color:var(--mut)}
+.seg button.on{background:#3a3c44;color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.sidehd{display:flex;align-items:center;padding:2px 10px 6px 14px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.slist{flex:1;overflow:auto;padding:0 8px 12px;display:flex;flex-direction:column;gap:4px}
+.sitem{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 0;border-radius:10px;cursor:pointer;position:relative}
+.sitem:hover{background:var(--s2)}
+.sitem.sel{background:#2a2216;box-shadow:inset 0 0 0 1px #5a4317}
+.sitem .handle{width:22px}
+.snum{min-width:34px;height:30px;padding:0 6px;border-radius:7px;display:grid;place-items:center;font-weight:800;font-size:14px;color:#111}
+.sbody{flex:1;min-width:0}
+.sh{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.ss{color:var(--mut);font-size:12px;margin-top:1px}
+.dbox{width:46px;height:46px;flex:none;border-radius:10px;background:var(--s3);display:flex;flex-direction:column;align-items:center;justify-content:center;margin-left:8px}
+.dbox small{font-size:10px;font-weight:700;color:var(--acc);letter-spacing:.06em}
+.dbox b{font-size:19px;line-height:1}
+.livedot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--grn);margin-right:5px;box-shadow:0 0 8px var(--grn);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.sidefoot{border-top:1px solid var(--line);padding:9px 14px;color:var(--mut);font-size:12px}
+.main{flex:1;overflow:auto;min-width:0;padding:16px clamp(12px,2.2vw,28px) 90px}
+.empty{color:var(--mut);text-align:center;padding:60px 20px;border:1px dashed var(--line);border-radius:16px;margin-top:14px}
+.empty b{display:block;color:var(--tx);font-size:16px;margin-bottom:6px}
+
+/* header cards */
+.hcard{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:9px}
+.hrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hrow .grow{flex:1;min-width:140px}
+.lbl{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.scnum{width:64px;font-weight:800;font-size:18px;text-align:center}
+.dname{font-weight:700;font-size:16px}
+.stats{color:var(--mut);font-size:12px;display:flex;gap:12px;flex-wrap:wrap}
+.stats b{color:var(--tx)}
+.tbar{height:8px;background:var(--s3);border-radius:4px;overflow:hidden;position:relative}
+.tbar .fill{height:100%;background:var(--acc);border-radius:4px;transition:width .3s}
+.tbar .mk{position:absolute;top:-2px;bottom:-2px;width:2px;background:#fff;opacity:.7}
+.tbar.over{box-shadow:0 0 14px rgba(255,69,58,.65)}
+.tbar.over .fill{background:var(--red)}
+.tlbl{font-size:12px;color:var(--mut)}
+.tlbl b{color:var(--tx)}
+.tlbl .bad{color:var(--red);font-weight:700}.tlbl .ok{color:var(--grn);font-weight:700}
+.toolbar{display:flex;align-items:center;gap:6px;margin:14px 0 10px;flex-wrap:wrap}
+.vtog{display:flex;background:var(--s3);border-radius:9px;padding:2px}
+.vtog button{border:0;background:transparent;border-radius:7px;padding:5px 8px;color:var(--mut)}
+.vtog button.on{background:#3a3c44;color:var(--tx)}
+.daytags{display:flex;gap:5px;flex-wrap:wrap}
+.daytag{font-size:11px;font-weight:600;background:rgba(255,159,10,.14);color:var(--acc);border-radius:5px;padding:2px 7px;cursor:pointer;border:0}
+
+/* clocks */
+.clocks{user-select:none;display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-top:12px}
+.clock{background:#050506;border:1px solid var(--line);border-radius:14px;padding:10px 14px;min-width:0}
+.clock span{font-size:11px;letter-spacing:.14em;color:var(--mut);font-weight:800}
+.clock b{display:block;font:700 36px/1.1 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:-.02em;margin:2px 0}
+.clock small{color:var(--mut);font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clock.ok b{color:var(--grn)}
+.clock.bad b{color:var(--red)}
+.clock.bad{border-color:rgba(255,69,58,.55);box-shadow:0 0 24px rgba(255,69,58,.28)}
+.clock.idle b{color:var(--tx)}
+.donebtn{border:0;border-radius:14px;background:var(--grn);color:#00260b;font-weight:800;padding:0 20px;display:flex;align-items:center;gap:8px;font-size:15px}
+.donebtn:hover{filter:brightness(1.08)}
+
+/* rows */
+.rows{display:flex;flex-direction:column;gap:6px}
+.grp{border-radius:12px;background:var(--s1);border:1px solid var(--line);overflow:hidden}
+.grp.linked{border-left:3px solid var(--acc)}
+.grp.linked .row+.row{border-top:1px dashed #3a3c43}
+.grp.note{background:#19160f;border-color:#3a301d}
+.grp.cur{border-color:var(--grn);box-shadow:0 0 0 1px var(--grn),0 0 26px rgba(48,209,88,.16)}
+.row{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 0;min-height:58px;cursor:pointer}
+.row:hover{background:rgba(255,255,255,.025)}
+.handle{width:30px;align-self:stretch;display:grid;place-items:center;color:var(--dim);cursor:grab;touch-action:none;flex:none}
+.handle:hover{color:var(--mut)}
+.stripe{width:4px;align-self:stretch;border-radius:2px;background:var(--s3);flex:none}
+.num{font-weight:800;font-size:17px;min-width:44px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.nicon{color:#c9a15a;display:grid;place-items:center;min-width:44px}
+.thumb{width:76px;height:43px;border-radius:6px;object-fit:cover;flex:none;background:var(--s3)}
+.body{flex:1;min-width:0}
+.t1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t1 b{font-weight:650}
+.t1 .d{color:var(--mut)}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.chip{font-size:11px;font-weight:650;padding:2px 7px;border-radius:5px;background:var(--s3);color:#c6c9d0;letter-spacing:.01em}
+.chip.sz{background:#e9eaee;color:#111}
+.chip.su{background:rgba(10,132,255,.18);color:#72b6ff}
+.chip.cam{background:rgba(191,90,242,.18);color:#d39af5}
+.chip.gr{background:rgba(48,209,88,.13);color:#6fdc8c}
+.chip.us{background:rgba(255,214,10,.14);color:#ffd60a}
+.chip.warn{background:rgba(255,69,58,.16);color:#ff7b72}
+.chip.okc{background:rgba(48,209,88,.15);color:#6fdc8c}
+.flag{color:#ffd60a}
+.lk{color:var(--acc)}
+.mins{font-variant-numeric:tabular-nums;font-weight:750;color:var(--acc);min-width:48px;text-align:right}
+.when{width:62px;flex:none;text-align:right;font-variant-numeric:tabular-nums;font-weight:650;font-size:13px;line-height:1.15}
+.when small{display:block;font-size:10px;color:var(--mut);font-weight:600}
+.when.proj{color:var(--acc)}
+.when.fin{color:var(--grn)}
+.chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--dim);display:grid;place-items:center;flex:none;background:none;padding:0;margin-left:-4px}
+.chk:hover{border-color:var(--grn)}
+.chk.on{background:var(--grn);border-color:var(--grn);color:#00260b}
+.row.done .num,.row.done .body,.row.done .mins,.row.done .thumb{opacity:.42}
+.row.done .num{text-decoration:line-through}
+.ph{border:2px dashed var(--acc);border-radius:12px;opacity:.55;flex:none}
+.lift{box-shadow:0 14px 44px rgba(0,0,0,.7);opacity:.95}
+body.dragging{cursor:grabbing;user-select:none}
+
+/* storyboard grid */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.bcard{background:var(--s1);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer}
+.bcard:hover{border-color:#43464f}
+.bimg{aspect-ratio:16/9;background:#0a0a0b;display:grid;place-items:center;color:var(--dim);position:relative}
+.bimg img{width:100%;height:100%;object-fit:cover;display:block}
+.bimg .bn{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);border-radius:6px;padding:2px 7px;font-weight:800;color:#fff}
+.bimg .bm{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.7);border-radius:6px;padding:2px 7px;font-weight:700;color:var(--acc);font-size:12px}
+.binfo{padding:8px 10px}
+.binfo .t1{font-size:13px}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:80}
+.sheet{position:fixed;z-index:81;top:50%;left:50%;transform:translate(-50%,-50%);width:min(580px,95vw);max-height:92vh;display:flex;flex-direction:column;background:var(--s1);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:pop .16s ease-out}
+.sheet.wide{width:min(760px,95vw)}
+.sheet.small{width:min(400px,95vw)}
+@keyframes pop{from{opacity:0;transform:translate(-50%,-48%) scale(.98)}}
+.sheet-hd{display:flex;align-items:center;gap:10px;padding:12px 12px 12px 16px;border-bottom:1px solid var(--line);flex:none}
+.sheet-body{overflow:auto;padding:14px 16px}
+.sheet-ft{display:flex;gap:6px;align-items:center;padding:10px 12px;border-top:1px solid var(--line);flex:none;flex-wrap:wrap}
+.mnum{min-width:48px;height:40px;padding:0 8px;border-radius:9px;background:var(--acc);color:#1a1000;display:grid;place-items:center;font-weight:900;font-size:18px}
+.mt{font-weight:700;font-size:16px}
+.ms{color:var(--mut);font-size:12px}
+.f{display:flex;flex-direction:column;gap:5px;margin-bottom:13px;min-width:0}
+.f>span{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px}
+.hint{color:var(--mut);font-size:12px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{border:1px solid var(--line);background:var(--s2);border-radius:999px;padding:5px 11px;font-size:12px;font-weight:650;color:#d5d8de;display:inline-flex;align-items:center;gap:5px}
+.pill:hover{border-color:#4a4d55}
+.pill.on{background:var(--acc);border-color:var(--acc);color:#1a1000}
+.sw{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.sw button{width:26px;height:26px;border-radius:50%;border:2px solid transparent;padding:0}
+.sw button.on{border-color:#fff;box-shadow:0 0 0 2px var(--s1) inset}
+.sw .none{background:var(--s3);color:var(--mut);display:grid;place-items:center}
+.minsed{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.minsed input{width:72px;text-align:center;font-weight:800;font-size:16px}
+.board{width:100%;border-radius:10px;margin-bottom:8px;display:block;max-height:300px;object-fit:contain;background:#000}
+.togs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.tog{display:flex;align-items:center;gap:8px;background:var(--s2);border-radius:9px;padding:8px 10px;cursor:pointer;font-weight:600;font-size:13px}
+.tog input{accent-color:var(--acc);width:16px;height:16px}
+.sec{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);margin:6px 0 10px}
+.lists{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.lists textarea{height:130px;font-size:12px}
+.menu{display:flex;flex-direction:column;gap:4px}
+.mi{display:flex;align-items:center;gap:12px;border:0;background:var(--s2);border-radius:11px;padding:11px 12px;text-align:left}
+.mi:hover{background:var(--s3)}
+.mi .ico{width:34px;height:34px;border-radius:9px;background:var(--s3);display:grid;place-items:center;color:var(--acc);flex:none}
+.mi b{display:block;font-size:14px}
+.mi small{color:var(--mut)}
+.strip-h{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:14px 0 8px}
+.strip-item{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 0}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b2d33;border:1px solid var(--line);color:var(--tx);border-radius:12px;padding:10px 16px;font-weight:600;z-index:200;opacity:0;pointer-events:none;transition:.2s}
+#toast.on{opacity:1}
+
+.syncpill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--s2);border-radius:999px;padding:5px 11px;font-size:12px;font-weight:700;color:var(--mut);white-space:nowrap}
+.syncpill i{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:none}
+.syncpill.ok{color:var(--tx)}.syncpill.ok i{background:var(--grn);box-shadow:0 0 8px var(--grn)}
+.syncpill.wait i{background:var(--acc);animation:pulse 1s infinite}
+.syncpill.bad{color:#ff8a80;border-color:rgba(255,69,58,.4)}.syncpill.bad i{background:var(--red)}
+.tagdev{font-size:10px;font-weight:700;color:var(--mut);background:var(--s3);border-radius:4px;padding:2px 6px;margin-left:6px;vertical-align:2px}
+.linkrow{display:flex;gap:6px}.linkrow input{flex:1;font-size:12px;color:var(--mut)}
+.ro .handle{visibility:hidden}
+.ro .chk,.ro [data-b]:not([data-b^="g:"]){pointer-events:none}
+.ro [data-act=newProj],.ro [data-act=dupProj],.ro [data-act=delProj],.ro [data-act=importProj],.ro [data-act=addScene],.ro [data-act=addShot],.ro [data-act=dupScene],.ro [data-act=delScene],.ro [data-act=addDay],.ro [data-act=dupDay],.ro [data-act=delDay],.ro [data-act=noteMenu],.ro [data-act=toggleLive],.ro [data-act=completeCur],.ro [data-act=resetDone],.ro [data-act=delShot],.ro [data-act=dupShot],.ro [data-act=exclShot],.ro [data-act=delNote],.ro [data-act=dupNote],.ro [data-act=stripAdd],.ro [data-act=stripRem],.ro [data-act=restore],.ro [data-act=boardUp],.ro [data-act=boardDel]{display:none!important}
+@media (max-width:820px){.syncpill{padding:5px 8px}.syncpill span{display:none}}
+#print{display:none}
+@media print{
+  #app,#modal,#toast{display:none!important}
+  html,body{background:#fff;height:auto;color:#000}
+  #print{display:block;color:#000;font:9.5pt/1.3 -apple-system,Helvetica,Arial,sans-serif}
+  #print h1{font-size:16pt;margin:0 0 2pt}
+  #print h2{font-size:11.5pt;margin:12pt 0 4pt;padding:4pt 6pt;background:#eee;border-radius:3pt;page-break-after:avoid}
+  #print .sub{color:#555;margin-bottom:8pt}
+  #print table{width:100%;border-collapse:collapse}
+  #print th,#print td{border-bottom:.5pt solid #bbb;padding:3pt 4pt;text-align:left;vertical-align:top}
+  #print th{font-size:7pt;text-transform:uppercase;color:#555;letter-spacing:.05em}
+  #print tr{page-break-inside:avoid}
+  #print .pn td{background:#f4efe3;font-style:italic}
+  #print .pd td{color:#999;text-decoration:line-through}
+  #print img{width:110px;border-radius:2pt}
+  #print .b{font-weight:700}
+}
+@page{margin:11mm}
+
+@media (max-width:820px){
+  .side{width:100%;border-right:0}
+  .main{display:none}
+  .proj.show-main .side{display:none}
+  .proj.show-main .main{display:block}
+  .mob{display:inline-grid!important}
+  .clocks{grid-template-columns:1fr 1fr}
+  .clocks .donebtn{grid-column:1/-1;padding:12px;justify-content:center}
+  .clock b{font-size:28px}
+  .f3{grid-template-columns:1fr 1fr}
+  .main{padding:10px 8px 90px}
+  .row{gap:6px;padding:8px 8px 8px 0}
+  .handle{width:22px}
+  .when{width:42px;font-size:12px}
+  .num{min-width:30px;font-size:14px}
+  .nicon{min-width:30px}
+  .mins{min-width:34px;font-size:13px}
+  .lk{display:none}
+  .chk{width:22px;height:22px}
+  .chip{font-size:10px;padding:1px 5px}
+  .t1{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .t1 .d{display:none}
+  .thumb{display:none}
+  .pcard .pc-act{opacity:1}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal"></div>
+<div id="print"></div>
+<div id="toast"></div>
+<input type="file" id="fImp" accept=".json,.shotday,application/json" hidden>
+<input type="file" id="fImg" accept="image/*" hidden>
+<script>
+'use strict';
+/* ============ utilities ============ */
+const KEY='shotday.v1';
+const $=s=>document.querySelector(s);
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const toMin=t=>{if(!t)return 0;const[h,m]=t.split(':').map(Number);return h*60+(m||0)};
+const todayStr=(o=0)=>{const d=new Date();d.setDate(d.getDate()+o);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+function fmtClock(min,small=true){let m=((Math.round(min)%1440)+1440)%1440;const h=Math.floor(m/60),mm=m%60,ap=h<12?'AM':'PM';return `${h%12||12}:${pad(mm)}${small?`<small>${ap}</small>`:' '+ap}`}
+function fmtDur(m){m=Math.round(Math.abs(m));const h=Math.floor(m/60),r=m%60;return h?`${h}h ${pad(r)}m`:`${r}m`}
+function fmtMins(m){m=+m||0;if(m>=60){const h=Math.floor(m/60),r=m%60;return `${h}h${r?' '+r+'m':''}`}return m+'m'}
+function fmtT(d){const r=Math.round(d),a=Math.abs(r),s=r>0?'+':r<0?'−':'±';return `T${s}${a>=60?Math.floor(a/60)+':'+pad(a%60):pad(a)}`}
+function dateParts(ds){if(!ds)return{w:'—',d:'',m:'',long:'No date'};const d=new Date(ds+'T12:00:00');return{w:d.toLocaleDateString(undefined,{weekday:'short'}).toUpperCase(),d:d.getDate(),m:d.toLocaleDateString(undefined,{month:'short'}).toUpperCase(),long:d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}}
+function letter(i,skip){const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(c=>!skip||(c!=='I'&&c!=='O'));let s='';i++;while(i>0){i--;s=L[i%L.length]+s;i=Math.floor(i/L.length)}return s}
+let toastT;function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2200)}
+function download(name,text,type='text/plain'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+const fileSafe=s=>String(s||'export').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')||'export';
+
+const I={
+plus:'<path d="M12 5v14M5 12h14"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+share:'<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/>',
+back:'<path d="M15 18l-6-6 6-6"/>',
+grip:'<path d="M5 9h14M5 15h14"/>',
+check:'<path d="M20 6L9 17l-5-5"/>',
+trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
+copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+link:'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
+note:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+strip:'<rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/>',
+grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+x:'<path d="M18 6L6 18M6 6l12 12"/>',
+film:'<rect x="2" y="2" width="20" height="20" rx="2.18"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5"/>',
+cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+pdf:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/>',
+table:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>',
+live:'<circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/>',
+clap:'<path d="M4 11v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8H4z"/><path d="M4 11l-.5-3.5 15.8-2.7.6 3.6L4 11z"/><path d="M8.5 6.9l2.4 3M13.3 6.1l2.4 3"/>',
+clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+truck:'<path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+coffee:'<path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/>',
+tool:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+};
+const ic=(n,s=18)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
+const starSvg=(s=16)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+
+/* ============ data model ============ */
+const COLORS=['#ff453a','#ff9f0a','#ffd60a','#30d158','#64d2ff','#0a84ff','#bf5af2','#ff6482','#ac8e68'];
+const DEF_LISTS={
+ size:['EWS','WS','FS','MWS','MS','MCU','CU','ECU','Insert','OTS','2-Shot','Group'],
+ angle:['Eye Level','High','Low','Overhead',"Bird's Eye",'Dutch','POV','Profile'],
+ move:['Static','Pan','Tilt','Push In','Pull Out','Dolly','Tracking','Handheld','Steadicam','Gimbal','Crane','Jib','Zoom','Whip Pan','Drone'],
+ lens:['14mm','18mm','24mm','28mm','35mm','40mm','50mm','65mm','85mm','100mm','135mm'],
+ gear:['Sticks','Dolly','Slider','Steadicam','Gimbal','Crane','Jib','Drone','Car Mount','Easy Rig','Haze'],
+ camera:['A','B','C'],
+ user:['Must Have','Nice to Have','Pickup','Second Unit']
+};
+const CATS=[['desc','Description'],['size','Shot Size'],['angle','Angle'],['move','Movement'],['lens','Lens'],['setup','Setup'],['camera','Camera'],['gear','Gear'],['user','User Category'],['flag','Flag'],['color','Color'],['time','Time'],['board','Storyboard'],['cast','Cast']];
+const LIST_NAMES={size:'Shot Sizes',angle:'Angles',move:'Movements',lens:'Lenses',gear:'Gear',camera:'Cameras',user:'User Category'};
+function defSettings(){return{vis:Object.fromEntries(CATS.map(c=>[c[0],!['cast','user'].includes(c[0])])),lists:JSON.parse(JSON.stringify(DEF_LISTS)),userLabel:'Priority',defMins:10,skipIO:true}}
+function newProject(name){return{id:uid(),name,created:Date.now(),updated:Date.now(),scenes:[],days:[],settings:defSettings()}}
+function newScene(p){const nums=p.scenes.map(s=>parseInt(s.number)||0);return{id:uid(),number:String((nums.length?Math.max(...nums):0)+1),ie:'INT',loc:'',tod:'DAY',pages:'',cast:'',synopsis:'',shots:[]}}
+function newShot(p,prev){return{id:uid(),num:'',name:'',desc:'',size:'',angle:'',move:'',lens:prev?.lens||'',setup:prev?.setup??1,camera:prev?.camera||'A',gear:[],user:'',flag:false,color:'',mins:+p.settings.defMins||10,link:false,cast:'',notes:'',board:''}}
+function newDay(p){const last=[...p.days].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).pop();let date=todayStr();if(last&&last.date){const d=new Date(last.date+'T12:00:00');d.setDate(d.getDate()+1);date=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+ return{id:uid(),date,name:'Day '+(p.days.length+1),call:'07:00',lunch:'13:00',wrap:'19:00',sceneIds:[],items:[],excluded:[],done:{},live:null}}
+
+function sceneHead(sc){return `${sc.ie?sc.ie+'. ':''}${sc.loc||'Untitled location'}${sc.tod?' – '+sc.tod:''}`}
+function stripColor(sc){const night=/NIGHT|DUSK|EVENING/i.test(sc.tod||''),ext=/EXT/i.test(sc.ie||'');return ext?(night?'#30d158':'#ffd60a'):(night?'#64a8ff':'#f2f2f2')}
+function shotNum(p,sc,i){const s=sc.shots[i];return s.num||(sc.number+letter(i,p.settings.skipIO))}
+function shotIndex(p){const m={};p.scenes.forEach(sc=>sc.shots.forEach((shot,i)=>m[shot.id]={shot,scene:sc,i}));return m}
+function groupsOf(arr,isLinked,canJoin=()=>true){const out=[];let cur=null;arr.forEach(x=>{if(cur&&cur.open&&canJoin(x))cur.items.push(x);else{cur={items:[x]};out.push(cur)}cur.open=isLinked(x)});return out}
+function sceneMins(sc){return groupsOf(sc.shots,s=>s.link).reduce((a,g)=>a+Math.max(...g.items.map(s=>+s.mins||0)),0)}
+
+/* shoot-day sync + plan */
+function syncDay(p,day){
+ const idx=shotIndex(p);day.excluded=day.excluded||[];day.done=day.done||{};
+ day.sceneIds=day.sceneIds.filter(id=>p.scenes.some(s=>s.id===id));
+ day.items=day.items.filter(it=>it.t==='note'||(idx[it.id]&&day.sceneIds.includes(idx[it.id].scene.id)&&!day.excluded.includes(it.id)));
+ for(const sid of day.sceneIds){const sc=p.scenes.find(s=>s.id===sid);
+  for(const sh of sc.shots){if(day.excluded.includes(sh.id)||day.items.some(it=>it.id===sh.id))continue;
+   let at=-1;day.items.forEach((it,k)=>{if(it.t==='shot'&&idx[it.id].scene.id===sid)at=k});
+   if(at<0)day.items.push({t:'shot',id:sh.id});else day.items.splice(at+1,0,{t:'shot',id:sh.id})}}
+}
+function rebuildByScenes(p,day){
+ const idx=shotIndex(p);const before={};let pend=[];
+ day.items.forEach(it=>{if(it.t==='note')pend.push(it);else{before[it.id]=pend;pend=[]}});
+ const out=[];
+ for(const sid of day.sceneIds){const shotsHere=day.items.filter(it=>it.t==='shot'&&idx[it.id]?.scene.id===sid);
+  shotsHere.forEach(it=>{out.push(...(before[it.id]||[]),it)})}
+ out.push(...pend);
+ day.items.forEach(it=>{if(!out.includes(it))out.push(it)});
+ day.items=out;
+}
+function dayPlan(p,day){
+ syncDay(p,day);const idx=shotIndex(p);
+ const call=toMin(day.call);let wrap=toMin(day.wrap);if(wrap<=call)wrap+=1440;
+ const rows=day.items.map(it=>{const info=it.t==='shot'?idx[it.id]:null;return{it,info,key:it.id,mins:it.t==='shot'?(+info.shot.mins||0):(+it.mins||0)}});
+ const groups=groupsOf(rows,r=>r.it.t==='shot'&&r.info.shot.link,r=>r.it.t==='shot');
+ let t=call;
+ groups.forEach(g=>{g.mins=Math.max(0,...g.items.map(r=>r.mins));g.start=t;g.end=t+g.mins;t=g.end;g.done=g.items.every(r=>day.done[r.key]!=null)});
+ return{groups,call,wrap,end:t,used:t-call,avail:wrap-call,lunch:day.lunch?toMin(day.lunch)+(toMin(day.lunch)<call?1440:0):null};
+}
+function nowFor(plan){const d=new Date();let n=d.getHours()*60+d.getMinutes()+d.getSeconds()/60+(+S.offset||0);if(plan&&plan.wrap>1440&&n<plan.call-180)n+=1440;return n}
+function isLive(day,plan){if(day.live===true)return true;if(day.live===false)return false;const n=nowFor(plan);return day.date===todayStr()&&n>=plan.call&&n<=plan.wrap+180}
+function liveInfo(day,plan){
+ const now=nowFor(plan);
+ const doneVals=Object.values(day.done).filter(v=>typeof v==='number');
+ const lastDone=Math.max(plan.call,...doneVals);
+ const ci=plan.groups.findIndex(g=>!g.done);
+ if(ci<0)return{now,finished:true,wrapAt:lastDone,wrapT:lastDone-plan.wrap};
+ const cur=plan.groups[ci];
+ const startedAt=Math.max(plan.call,lastDone);
+ const elapsed=Math.max(0,now-startedAt);
+ const rem=Math.max(0,cur.mins-elapsed);
+ const base=Math.max(now,plan.call);
+ const proj={};let t=base+rem;proj[ci]=Math.min(startedAt,base);
+ for(let k=ci+1;k<plan.groups.length;k++){const g=plan.groups[k];if(g.done)continue;proj[k]=t;t+=g.mins}
+ return{now,ci,cur,pre:now<plan.call,shotT:now-cur.end,wrapAt:t,wrapT:t-plan.wrap,proj,elapsed};
+}
+
+/* ============ state ============ */
+function demo(){
+ const p=newProject('Night Shift — Short Film');
+ const mk=(o)=>Object.assign(newShot(p),o);
+ const s1=Object.assign(newScene(p),{number:'1',ie:'INT',loc:'ROADSIDE DINER',tod:'NIGHT',pages:'2 1/8',cast:'1, 2',synopsis:'Mara waits in a booth for Eli. The coffee goes cold.'});
+ s1.shots=[mk({name:'Diner establishing',desc:'Wide on the empty diner, rain on the windows',size:'WS',angle:'Eye Level',move:'Static',lens:'24mm',setup:1,mins:45,gear:['Sticks'],flag:true,color:'#ff453a'}),
+  mk({name:'Mara in booth',desc:'Slow push toward Mara as she checks the door',size:'MS',move:'Push In',lens:'50mm',setup:2,mins:40,gear:['Dolly'],link:true}),
+  mk({name:'Door — B cam',desc:'B cam holds on the door',size:'MWS',move:'Static',lens:'85mm',setup:2,camera:'B',mins:40}),
+  mk({name:'Hands on cup',desc:'Mara turns the cup, it is cold',size:'Insert',move:'Static',lens:'100mm',setup:3,mins:20,user:'Nice to Have'}),
+  mk({name:'Eli arrives',desc:'Over Mara toward Eli in the doorway',size:'OTS',angle:'Eye Level',move:'Static',lens:'35mm',setup:4,mins:30})];
+ const s2=Object.assign(newScene(p),{number:'2',ie:'EXT',loc:'DINER PARKING LOT',tod:'NIGHT',pages:'1 4/8',cast:'1, 2',synopsis:'Eli follows Mara out to her car.'});
+ s2.shots=[mk({name:'Lot overhead',desc:'Drone overhead, the two figures cross the lot',size:'EWS',angle:"Bird's Eye",move:'Drone',lens:'24mm',setup:1,mins:40,gear:['Drone'],color:'#0a84ff'}),
+  mk({name:'Walk and talk',desc:'Lead them across the lot',size:'MWS',move:'Steadicam',lens:'35mm',setup:2,mins:50,gear:['Steadicam']}),
+  mk({name:'Eli CU',desc:'Eli under the sodium light',size:'CU',move:'Static',lens:'85mm',setup:3,mins:30})];
+ const s3=Object.assign(newScene(p),{number:'3',ie:'INT',loc:"MARA'S CAR",tod:'NIGHT',pages:'1 2/8',cast:'1',synopsis:'Mara drives away alone.'});
+ s3.shots=[mk({name:'Windshield 2-shot',desc:'Through the windshield',size:'2-Shot',move:'Static',lens:'24mm',setup:1,mins:30,gear:['Car Mount']}),
+  mk({name:'Mara driving',desc:'Profile, streetlights pass',size:'CU',angle:'Profile',move:'Static',lens:'50mm',setup:2,mins:15}),
+  mk({name:'POV road',desc:'Her POV down the empty road',size:'WS',angle:'POV',move:'Tracking',lens:'35mm',setup:3,mins:10})];
+ p.scenes=[s1,s2,s3];
+ const d1=newDay(p);Object.assign(d1,{date:todayStr(),name:'Day 1',call:'08:00',lunch:'11:00',wrap:'15:00',sceneIds:[s1.id,s2.id]});
+ syncDay(p,d1);
+ d1.items.unshift({t:'note',id:uid(),text:'Crew call · Pre-light diner',mins:45,color:'#ac8e68'});
+ const ix=d1.items.findIndex(it=>it.id===s2.shots[0].id);
+ d1.items.splice(ix,0,{t:'note',id:uid(),text:'Lunch',mins:60,color:'#30d158'},{t:'note',id:uid(),text:'Company move · Reset to parking lot',mins:30,color:'#64d2ff'});
+ const d2=newDay(p);Object.assign(d2,{date:todayStr(1),name:'Day 2',call:'17:00',lunch:'23:00',wrap:'05:00',sceneIds:[s3.id]});syncDay(p,d2);
+ p.days=[d1,d2];
+ return p;
+}
+/* crew sync bootstrap (needed before load) */
+const SYNC_KEY='shotday.sync';
+const BOOT_CODE=(()=>{const m=document.querySelector('meta[name="sd-code"]');const c=(m&&m.content)||'';return c.startsWith('<'+'?')?'':c})();
+const HOSTED=!!(window.google&&google.script&&google.script.run);
+let SY=Object.assign({url:'',code:'',role:null,vers:{},dirty:{},localOnly:{},links:null},(()=>{try{return JSON.parse(localStorage.getItem(SYNC_KEY))}catch(e){return null}})()||{});
+if(HOSTED&&BOOT_CODE&&BOOT_CODE!==SY.code){SY.code=BOOT_CODE;SY.role=null;SY.links=null}
+/* web-page mode: page served from a normal website, talks to the Google script in the background */
+const SERVER=(document.querySelector('meta[name="sd-server"]')||{}).content||'';
+const WEBPAGE=!HOSTED&&/^https?:$/.test(location.protocol)&&/^https:\/\/script\.google\.com\//.test(SERVER)&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+if(WEBPAGE){const k=(new URLSearchParams(location.search).get('k')||'').replace(/[^\w-]/g,'');if(SY.url!==SERVER){SY.url=SERVER;SY.vers={};SY.dirty={};SY.role=null}if(k&&k!==SY.code){SY.code=k;SY.role=null;SY.links=null}}
+function persistSync(){try{localStorage.setItem(SYNC_KEY,JSON.stringify(SY))}catch(e){}}
+const syncConfigured=()=>!!(SY.code&&(HOSTED||SY.url));
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.projects)){s.ui=s.ui||{view:'home'};s.offset=s.offset||0;return s}}catch(e){}return{projects:syncConfigured()?[]:[demo()],ui:{view:'home'},offset:0}}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Storage is full — remove some storyboard images or export the project.')}}
+function touch(){const p=P();if(p)p.updated=Date.now();save();if(p)Sync.dirty(p.id)}
+const P=()=>S.projects.find(x=>x.id===S.ui.pid);
+const SC=()=>{const p=P();return p&&p.scenes.find(s=>s.id===S.ui.sid)};
+const DY=()=>{const p=P();return p&&p.days.find(d=>d.id===S.ui.did)};
+let M=null; // modal state
+
+/* ============ views ============ */
+function render(){renderApp();renderModal()}
+function renderApp(){
+ const a=$('#app'),key=S.ui.view+S.ui.tab+(S.ui.tab==='days'?S.ui.did:S.ui.sid);
+ const keep=renderApp.key===key?{m:$('#main')?.scrollTop,s:$('.slist')?.scrollTop}:{};renderApp.key=key;
+ if(S.ui.view==='project'&&P()){a.innerHTML=viewProject();a.querySelectorAll('[data-sort]').forEach(b=>sortable(b));if(keep.m)$('#main').scrollTop=keep.m;if(keep.s)$('.slist').scrollTop=keep.s}
+ else{S.ui.view='home';a.innerHTML=viewHome()}
+}
+function viewHome(){
+ const cards=S.projects.map(p=>{const shots=p.scenes.reduce((a,s)=>a+s.shots.length,0);
+  const bars=p.scenes.slice(0,24).map(s=>`<i style="height:${Math.min(36,8+s.shots.length*5)}px;background:${stripColor(s)}"></i>`).join('');
+  return `<div class="pcard" data-act="openProj" data-id="${p.id}" role="button" tabindex="0">
+   <div class="pc-art">${bars}</div>
+   <h3>${esc(p.name)}${Sync.on()&&SY.localOnly[p.id]?'<span class="tagdev">This device only</span>':''}</h3>
+   <div class="meta">${p.scenes.length} scenes · ${shots} shots · ${p.days.length} shoot days</div>
+   <div class="meta">Edited ${new Date(p.updated).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>
+   <div class="pc-act"><button class="iconbtn sm mute" title="Duplicate" data-act="dupProj" data-id="${p.id}">${ic('copy',15)}</button><button class="iconbtn sm mute" title="Delete" data-act="delProj" data-id="${p.id}">${ic('trash',15)}</button></div>
+  </div>`}).join('');
+ return `<header class="top"><div class="brand"><div class="logo">${ic('clap',17)}</div>Shotday</div><div class="sp"></div>${syncPill()}
+  <button class="btn ghost" data-act="importProj">${ic('upload',15)} Import</button>
+  <button class="btn pri" data-act="newProj">${ic('plus',15)} New Project</button></header>
+  <main class="home"><h1>Projects</h1><div class="pgrid">${cards}<button class="pcard new" data-act="newProj">${ic('plus',28)}<span>New Project</span></button></div></main>`;
+}
+function viewProject(){
+ const p=P(),tab=S.ui.tab||'scenes';
+ const shots=p.scenes.reduce((a,s)=>a+s.shots.length,0),tot=p.scenes.reduce((a,s)=>a+sceneMins(s),0);
+ let list;
+ if(tab==='scenes'){
+  list=p.scenes.length?p.scenes.map(sc=>`<div class="grp" style="background:none;border:0;border-radius:10px"><div class="sitem ${sc.id===S.ui.sid?'sel':''}" data-key="${sc.id}" data-act="selScene" data-id="${sc.id}">
+   <div class="handle">${ic('grip',14)}</div><div class="snum" style="background:${stripColor(sc)}">${esc(sc.number)}</div>
+   <div class="sbody"><div class="sh">${esc(sceneHead(sc))}</div><div class="ss">${sc.shots.length} shot${sc.shots.length===1?'':'s'} · ${fmtMins(sceneMins(sc))}${sc.pages?' · '+esc(sc.pages)+' pg':''}</div></div></div></div>`).join('')
+  :`<div class="empty" style="margin:8px">No scenes yet.<br><br><button class="btn pri" data-act="addScene">${ic('plus',15)} Add Scene</button></div>`;
+ }else{
+  const days=[...p.days].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  list=days.length?days.map(d=>{const pl=dayPlan(p,d),dp=dateParts(d.date),live=isLive(d,pl);
+   return `<div class="sitem ${d.id===S.ui.did?'sel':''}" data-act="selDay" data-id="${d.id}"><div class="dbox"><small>${dp.m||'—'}</small><b>${dp.d}</b></div>
+   <div class="sbody"><div class="sh">${live?'<span class="livedot"></span>':''}${esc(d.name||'Shoot Day')} <span style="color:var(--mut);font-weight:500">· ${dp.w}</span></div>
+   <div class="ss">${d.sceneIds.length} scene${d.sceneIds.length===1?'':'s'} · ${fmtDur(pl.used)} / ${fmtDur(pl.avail)} ${pl.used>pl.avail?'<span style="color:var(--red);font-weight:700">over</span>':''}</div>
+   <div class="ss">Call ${fmtClock(toMin(d.call),false)} · Wrap ${fmtClock(toMin(d.wrap),false)}</div></div></div>`}).join('')
+  :`<div class="empty" style="margin:8px">No shoot days yet.<br><br><button class="btn pri" data-act="addDay">${ic('plus',15)} Add Shoot Day</button></div>`;
+ }
+ return `<header class="top"><button class="iconbtn" data-act="home" title="Projects">${ic('back',20)}</button><div class="ptitle">${esc(p.name)}</div><div class="sp"></div>${syncPill()}
+  <button class="iconbtn" data-act="export" title="Export & share">${ic('share',19)}</button>
+  <button class="iconbtn" data-act="settings" title="Shot categories & settings">${ic('gear',19)}</button></header>
+ <div class="proj ${S.ui.pane==='main'?'show-main':''}">
+  <aside class="side">
+   <div class="seg"><button class="${tab==='scenes'?'on':''}" data-act="tab" data-v="scenes">Shot List</button><button class="${tab==='days'?'on':''}" data-act="tab" data-v="days">Shoot Days</button></div>
+   <div class="sidehd"><span>${tab==='scenes'?'Scenes':'Shoot Days'}</span><div class="sp"></div><button class="iconbtn sm" title="Add" data-act="${tab==='scenes'?'addScene':'addDay'}">${ic('plus',18)}</button></div>
+   <div class="slist" ${tab==='scenes'?'data-sort="scenes"':''}>${list}</div>
+   <div class="sidefoot">${p.scenes.length} scenes · ${shots} shots · ${fmtDur(tot)} estimated</div>
+  </aside>
+  <section class="main" id="main">${tab==='scenes'?viewScene(p):viewDay(p)}</section>
+ </div>`;
+}
+function chips(p,s){const v=p.settings.vis,c=[],ch=(t,k='')=>c.push(`<span class="chip ${k}">${esc(t)}</span>`);
+ if(v.size&&s.size)ch(s.size,'sz');if(v.angle&&s.angle)ch(s.angle);if(v.move&&s.move)ch(s.move);if(v.lens&&s.lens)ch(s.lens);
+ if(v.setup&&s.setup!==''&&s.setup!=null)ch('SU '+s.setup,'su');if(v.camera&&s.camera)ch(s.camera+' Cam','cam');
+ if(v.gear)(s.gear||[]).forEach(g=>ch(g,'gr'));if(v.user&&s.user)ch(s.user,'us');if(v.cast&&s.cast)ch('Cast '+s.cast);
+ return c.join('')}
+function shotRow(p,x,o={}){
+ const s=x.shot,v=p.settings.vis,num=shotNum(p,x.scene,x.i);
+ const title=(s.name?`<b>${esc(s.name)}</b>`:'')+(v.desc&&s.desc?`<span class="d">${s.name?' — ':''}${esc(s.desc)}</span>`:'')||'<span class="d">Untitled shot</span>';
+ return `<div class="row ${o.done?'done':''}" data-key="${s.id}" data-act="editShot" data-id="${s.id}">
+  <div class="handle" title="Drag to reorder">${ic('grip',16)}</div>
+  ${o.day?`<button class="chk ${o.done?'on':''}" title="Mark complete" data-act="togDone" data-id="${s.id}">${o.done?ic('check',14):''}</button>${o.when}`:''}
+  <div class="stripe" style="${v.color&&s.color?'background:'+s.color:''}"></div>
+  <div class="num">${esc(num)}</div>
+  ${v.board&&s.board?`<img class="thumb" src="${s.board}" alt="">`:''}
+  <div class="body"><div class="t1">${title}</div><div class="chips">${chips(p,s)}</div></div>
+  ${v.flag&&s.flag?`<span class="flag" title="Flagged">${starSvg(16)}</span>`:''}
+  ${s.link?`<span class="lk" title="Linked with next shot">${ic('link',14)}</span>`:''}
+  ${v.time?`<div class="mins">${fmtMins(s.mins)}</div>`:''}
+ </div>`;
+}
+function viewScene(p){
+ const sc=SC();
+ if(!sc)return `<div class="empty"><b>${p.scenes.length?'Select a scene':'Build your shot list'}</b>${p.scenes.length?'Pick a scene on the left to see its shots.':'Add a scene, then add shots to it.'}<br><br><button class="btn pri" data-act="addScene">${ic('plus',15)} Add Scene</button></div>`;
+ const setups=new Set(sc.shots.map(s=>s.setup).filter(x=>x!==''&&x!=null)).size;
+ const days=p.days.filter(d=>d.sceneIds.includes(sc.id));
+ const opt=(arr,val)=>arr.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('');
+ const board=S.ui.board;
+ const body=!sc.shots.length?`<div class="empty"><b>No shots yet</b>Add the shots you need to cover this scene.<br><br><button class="btn pri" data-act="addShot">${ic('plus',15)} Add Shot</button></div>`
+  :board?`<div class="bgrid">${sc.shots.map((s,i)=>`<div class="bcard" data-act="editShot" data-id="${s.id}"><div class="bimg">${s.board?`<img src="${s.board}" alt="">`:ic('image',30)}<span class="bn">${esc(shotNum(p,sc,i))}</span><span class="bm">${fmtMins(s.mins)}</span></div><div class="binfo"><div class="t1"><b>${esc(s.name||'Untitled shot')}</b></div><div class="chips">${chips(p,s)}</div></div></div>`).join('')}</div>`
+  :`<div class="rows" data-sort="shots">${groupsOf(sc.shots.map((shot,i)=>({shot,scene:sc,i})),x=>x.shot.link).map(g=>`<div class="grp ${g.items.length>1?'linked':''}">${g.items.map(x=>shotRow(p,x)).join('')}</div>`).join('')}</div>`;
+ return `<div class="hcard">
+  <div class="hrow"><button class="iconbtn mob" data-act="pane" data-v="side">${ic('back',20)}</button>
+   <span class="lbl">Scene</span><input class="scnum" data-b="scene:number" value="${esc(sc.number)}">
+   <select data-b="scene:ie">${opt(['INT','EXT','INT/EXT'],sc.ie)}</select>
+   <input class="grow" data-b="scene:loc" value="${esc(sc.loc)}" placeholder="Location (e.g. KITCHEN)" style="font-weight:650;text-transform:uppercase">
+   <select data-b="scene:tod">${opt(['DAY','NIGHT','MORNING','EVENING','DAWN','DUSK','CONTINUOUS','LATER'],sc.tod)}</select></div>
+  <textarea rows="1" data-b="scene:synopsis" placeholder="Scene synopsis">${esc(sc.synopsis)}</textarea>
+  <div class="hrow"><span class="lbl">Pages</span><input style="width:80px" data-b="scene:pages" value="${esc(sc.pages)}" placeholder="1 3/8">
+   <span class="lbl">Cast #</span><input style="width:110px" data-b="scene:cast" value="${esc(sc.cast)}" placeholder="1, 2, 5"><div class="sp"></div>
+   <div class="stats"><span><b>${sc.shots.length}</b> shots</span><span><b>${setups}</b> setups</span><span><b>${fmtDur(sceneMins(sc))}</b> est.</span></div></div>
+  ${days.length?`<div class="daytags">${days.map(d=>`<button class="daytag" data-act="gotoDay" data-id="${d.id}">${ic('cal',11).replace('class="ic"','class="ic" style="display:inline;vertical-align:-1px"')} ${esc(d.name)} · ${dateParts(d.date).m} ${dateParts(d.date).d}</button>`).join('')}</div>`:''}
+ </div>
+ <div class="toolbar"><div class="vtog"><button class="${board?'':'on'}" data-act="view" data-v="list" title="Shot list">${ic('list',16)}</button><button class="${board?'on':''}" data-act="view" data-v="board" title="Storyboard">${ic('grid',16)}</button></div>
+  <div class="sp"></div><button class="iconbtn mute" title="Duplicate scene" data-act="dupScene">${ic('copy',17)}</button><button class="iconbtn mute" title="Delete scene" data-act="delScene">${ic('trash',17)}</button>
+  <button class="btn pri" data-act="addShot">${ic('plus',15)} Shot</button></div>
+ ${body}`;
+}
+function clocksHTML(p,day,plan){
+ const L=liveInfo(day,plan);
+ if(L.finished)return `<div class="clocks"><div class="clock ok"><span>SHOT CLOCK</span><b>DONE</b><small>All shots complete</small></div><div class="clock ${L.wrapT>0?'bad':'ok'}"><span>WRAP CLOCK</span><b>${fmtT(L.wrapT)}</b><small>Wrapped ${fmtClock(L.wrapAt,false)}</small></div><button class="donebtn" data-act="resetDone" style="background:var(--s3);color:var(--tx)">Reset</button></div>`;
+ const first=L.cur.items[0],idx=shotIndex(p);
+ const label=first.it.t==='shot'?`${shotNum(p,first.info.scene,first.info.i)} ${first.info.shot.name||''}`:(first.it.text||'Note');
+ const shot=L.pre?`<div class="clock idle"><span>CALL IN</span><b>${fmtDur(plan.call-L.now).replace('h ',':').replace('m','')}</b><small>First up: ${esc(label)}</small></div>`
+  :`<div class="clock ${L.shotT>0?'bad':'ok'}"><span>SHOT CLOCK</span><b>${fmtT(L.shotT)}</b><small>Now: ${esc(label)} · ${fmtMins(L.cur.mins)}</small></div>`;
+ return `<div class="clocks">${shot}<div class="clock ${L.wrapT>0?'bad':'ok'}"><span>WRAP CLOCK</span><b>${fmtT(L.wrapT)}</b><small>Est. wrap ${fmtClock(L.wrapAt,false)} · target ${fmtClock(plan.wrap,false)}</small></div>
+  <button class="donebtn" data-act="completeCur">${ic('check',18)} Complete</button></div>`;
+}
+function viewDay(p){
+ const day=DY();
+ if(!day)return `<div class="empty"><b>${p.days.length?'Select a shoot day':'Schedule your shoot'}</b>${p.days.length?'Pick a day on the left.':'Add a shoot day, then pull scenes onto it from the stripboard.'}<br><br><button class="btn pri" data-act="addDay">${ic('plus',15)} Add Shoot Day</button></div>`;
+ const plan=dayPlan(p,day),live=isLive(day,plan),L=live?liveInfo(day,plan):null;
+ const over=plan.used>plan.avail,pct=Math.min(100,plan.avail>0?plan.used/plan.avail*100:100);
+ const lunchPct=plan.lunch!=null&&plan.avail>0?Math.max(0,Math.min(100,(plan.lunch-plan.call)/plan.avail*100)):null;
+ const rows=plan.groups.map((g,gi)=>{
+  const isCur=L&&!L.finished&&gi===L.ci;
+  const inner=g.items.map(r=>{
+   const done=day.done[r.key]!=null;
+   let when;
+   if(done)when=`<div class="when fin" title="Completed">${fmtClock(day.done[r.key])}</div>`;
+   else if(L&&!L.finished&&L.proj[gi]!=null&&Math.round(L.proj[gi])!==Math.round(g.start))when=`<div class="when proj" title="Projected (planned ${fmtClock(g.start,false)})">${fmtClock(L.proj[gi])}</div>`;
+   else when=`<div class="when">${fmtClock(g.start)}</div>`;
+   if(r.it.t==='shot')return shotRow(p,r.info,{day:true,done,when});
+   const n=r.it;let badge='';
+   if(/lunch|meal/i.test(n.text||'')&&plan.lunch!=null&&!done){const at=L&&!L.finished&&L.proj[gi]!=null?L.proj[gi]:g.start,d=Math.round(at-plan.lunch);badge=`<div class="chips"><span class="chip ${Math.abs(d)<=10?'okc':'warn'}">${d===0?'On target':d>0?`${fmtDur(d)} late`:`${fmtDur(d)} early`} · target ${fmtClock(plan.lunch,false)}</span></div>`}
+   return `<div class="row ${done?'done':''}" data-key="${n.id}" data-act="editNote" data-id="${n.id}"><div class="handle" title="Drag to reorder">${ic('grip',16)}</div>
+    <button class="chk ${done?'on':''}" title="Mark complete" data-act="togDone" data-id="${n.id}">${done?ic('check',14):''}</button>${when}
+    <div class="stripe" style="background:${n.color||'#ac8e68'}"></div><div class="num nicon">${ic('note',18)}</div>
+    <div class="body"><div class="t1"><b>${esc(n.text||'Note')}</b></div>${badge}</div><div class="mins">${fmtMins(n.mins)}</div></div>`}).join('');
+  const isNote=g.items.length===1&&g.items[0].it.t==='note';
+  return `<div class="grp ${g.items.length>1?'linked':''} ${isNote?'note':''} ${isCur?'cur':''}">${inner}</div>`}).join('');
+ const spare=plan.avail-plan.used;
+ return `<div class="hcard">
+  <div class="hrow"><button class="iconbtn mob" data-act="pane" data-v="side">${ic('back',20)}</button>
+   <input class="grow dname" data-b="day:name" value="${esc(day.name)}" placeholder="Day name"><input type="date" data-b="day:date" value="${esc(day.date)}"></div>
+  <div class="hrow"><span class="lbl">Call</span><input type="time" data-b="day:call" value="${esc(day.call)}"><span class="lbl">Lunch</span><input type="time" data-b="day:lunch" value="${esc(day.lunch)}"><span class="lbl">Wrap</span><input type="time" data-b="day:wrap" value="${esc(day.wrap)}"></div>
+  <div class="tbar ${over?'over':''}"><div class="fill" style="width:${pct}%"></div>${lunchPct!=null?`<div class="mk" style="left:${lunchPct}%" title="Lunch"></div>`:''}</div>
+  <div class="tlbl">Scheduled <b>${fmtDur(plan.used)}</b> of <b>${fmtDur(plan.avail)}</b> available · Planned wrap <b>${fmtClock(plan.end,false)}</b> · ${over?`<span class="bad">${fmtDur(-spare)} over</span>`:`<span class="ok">${fmtDur(spare)} spare</span>`}</div>
+  <div id="clocks">${live?clocksHTML(p,day,plan):''}</div>
+ </div>
+ <div class="toolbar"><button class="btn" data-act="strip">${ic('strip',15)} Stripboard</button><button class="btn" data-act="noteMenu">${ic('note',15)} Note</button><div class="sp"></div>
+  <button class="btn ${live?'live':''}" data-act="toggleLive" title="Live Mode starts automatically at call time on the shoot date">${ic('live',15)} ${live?'Live':'Go Live'}</button>
+  <button class="iconbtn mute" title="Duplicate day" data-act="dupDay">${ic('copy',17)}</button><button class="iconbtn mute" title="Delete day" data-act="delDay">${ic('trash',17)}</button></div>
+ ${plan.groups.length?`<div class="rows" data-sort="day">${rows}</div>`:`<div class="empty"><b>Nothing scheduled yet</b>Open the stripboard to put scenes on this day. Their shots will line up here, minute by minute.<br><br><button class="btn pri" data-act="strip">${ic('strip',15)} Open Stripboard</button></div>`}`;
+}
+
+/* ============ modals ============ */
+function renderModal(){
+ const r=$('#modal');if(!M){r.innerHTML='';return}
+ let body='',cls='';
+ try{switch(M.type){case 'shot':body=mShot();break;case 'note':body=mNote();cls='small';break;case 'settings':body=mSettings();cls='wide';break;case 'export':body=mExport();cls='small';break;case 'strip':body=mStrip();break;case 'notes':body=mNotes();cls='small';break;case 'sync':body=mSync();break}}catch(e){console.error(e)}
+ if(!body){M=null;r.innerHTML='';return}
+ r.innerHTML=`<div class="scrim" data-act="closeModal"></div><div class="sheet ${cls}">${body}</div>`;
+ r.querySelectorAll('[data-sort]').forEach(b=>sortable(b));
+}
+const hd=(title,sub,lead='')=>`<div class="sheet-hd">${lead}<div><div class="mt">${title}</div>${sub?`<div class="ms">${sub}</div>`:''}</div><div class="sp"></div><button class="iconbtn" data-act="closeModal">${ic('x',20)}</button></div>`;
+function mShot(){
+ const p=P(),x=shotIndex(p)[M.id];if(!x)return '';
+ const s=x.shot,set=p.settings,L=set.lists,v=set.vis,num=shotNum(p,x.scene,x.i);
+ const dl=(k,label)=>v[k]?`<label class="f"><span>${label}</span><input list="dl-${k}" data-b="shot:${k}" value="${esc(s[k])}" placeholder="Choose or type"><datalist id="dl-${k}">${L[k].map(o=>`<option value="${esc(o)}">`).join('')}</datalist></label>`:'';
+ const pills=(arr,act,on)=>arr.map(o=>`<button class="pill ${on(o)?'on':''}" data-act="${act}" data-v="${esc(o)}">${esc(o)}</button>`).join('');
+ return hd(`Shot ${esc(num)}`,`Scene ${esc(x.scene.number)} · ${esc(sceneHead(x.scene))}`,`<div class="mnum">${esc(num)}</div>`)+`
+ <div class="sheet-body">
+  <div class="f2"><label class="f"><span>Nickname</span><input data-b="shot:name" value="${esc(s.name)}" placeholder="e.g. Mara reacts"></label>
+  <label class="f"><span>Shot number</span><input data-b="shot:num" value="${esc(s.num)}" placeholder="Auto (${esc(x.scene.number+letter(x.i,set.skipIO))})"></label></div>
+  ${v.desc?`<label class="f"><span>Description</span><textarea rows="2" data-b="shot:desc" placeholder="What happens in the shot, how the camera moves through the scene">${esc(s.desc)}</textarea></label>`:''}
+  <div class="f2">${dl('size','Shot Size')}${dl('angle','Angle')}${dl('move','Movement')}${dl('lens','Lens')}</div>
+  <div class="f2">${v.setup?`<label class="f"><span>Setup</span><input type="number" min="0" data-b="shot:setup" value="${esc(s.setup)}"></label>`:''}
+   ${v.camera?`<div class="f"><span>Camera</span><div class="pills">${pills(L.camera,'setCam',o=>o===s.camera)}</div></div>`:''}</div>
+  ${v.time?`<div class="f"><span>Time estimate</span><div class="minsed"><button class="btn" data-act="bump" data-v="-5">−5</button><input type="number" min="0" data-b="shot:mins" value="${esc(s.mins)}"><button class="btn" data-act="bump" data-v="5">+5</button><span class="hint">min</span><div class="sp"></div>${[5,10,15,20,30,45,60].map(m=>`<button class="pill ${+s.mins===m?'on':''}" data-act="setMins" data-v="${m}">${m}</button>`).join('')}</div><span class="hint" style="text-transform:none;letter-spacing:0;font-weight:500">Set to 0 to keep an optional shot in the list without using time.</span></div>`:''}
+  ${v.gear?`<div class="f"><span>Gear</span><div class="pills">${pills(L.gear,'togGear',o=>(s.gear||[]).includes(o))}</div></div>`:''}
+  ${v.user?`<div class="f"><span>${esc(set.userLabel||'User Category')}</span><div class="pills">${pills(L.user,'setUser',o=>o===s.user)}</div></div>`:''}
+  <div class="f2">${v.flag?`<div class="f"><span>Flag</span><div><button class="pill ${s.flag?'on':''}" data-act="togFlag">${starSvg(13)} ${s.flag?'Flagged':'Flag shot'}</button></div></div>`:''}
+   ${v.color?`<div class="f"><span>Color</span><div class="sw"><button class="none ${!s.color?'on':''}" data-act="setColor" data-v="" title="None">${ic('x',12)}</button>${COLORS.map(c=>`<button class="${s.color===c?'on':''}" style="background:${c}" data-act="setColor" data-v="${c}"></button>`).join('')}</div></div>`:''}</div>
+  <div class="f"><span>Link</span><div><button class="pill ${s.link?'on':''}" data-act="togLink">${ic('link',13)} Link with next shot</button></div><span class="hint" style="text-transform:none;letter-spacing:0;font-weight:500">Linked shots are shot at the same time (e.g. A and B camera). They share one time slot and move together.</span></div>
+  ${v.cast?`<label class="f"><span>Cast</span><input data-b="shot:cast" value="${esc(s.cast)}" placeholder="1, 2"></label>`:''}
+  <label class="f"><span>Notes</span><textarea rows="2" data-b="shot:notes" placeholder="Blocking, VFX, props, continuity…">${esc(s.notes)}</textarea></label>
+  ${v.board?`<div class="f"><span>Storyboard</span>${s.board?`<img class="board" src="${s.board}" alt="">`:''}<div class="hrow"><button class="btn" data-act="boardUp">${ic('image',15)} ${s.board?'Replace':'Add'} image</button>${s.board?`<button class="btn danger" data-act="boardDel">Remove</button>`:''}<span class="hint">or paste an image</span></div></div>`:''}
+ </div>
+ <div class="sheet-ft"><button class="btn danger" data-act="delShot">${ic('trash',14)} Delete</button><button class="btn" data-act="dupShot">${ic('copy',14)} Duplicate</button>${M.day?`<button class="btn" data-act="exclShot">Remove from day</button>`:''}<div class="sp"></div><button class="btn pri" data-act="closeModal">Done</button></div>`;
+}
+function mNote(){
+ const d=DY(),n=d&&d.items.find(i=>i.id===M.id);if(!n)return '';
+ return hd('Schedule Note',esc(d.name))+`<div class="sheet-body">
+  <label class="f"><span>Note</span><input data-b="note:text" value="${esc(n.text)}" placeholder="Lunch, company move, setup…"></label>
+  <div class="f"><span>Time</span><div class="minsed"><button class="btn" data-act="bumpN" data-v="-5">−5</button><input type="number" min="0" data-b="note:mins" value="${esc(n.mins)}"><button class="btn" data-act="bumpN" data-v="5">+5</button><span class="hint">min</span></div></div>
+  <div class="f"><span>Color</span><div class="sw">${['#ac8e68',...COLORS].map(c=>`<button class="${n.color===c?'on':''}" style="background:${c}" data-act="setNColor" data-v="${c}"></button>`).join('')}</div></div></div>
+  <div class="sheet-ft"><button class="btn danger" data-act="delNote">${ic('trash',14)} Delete</button><button class="btn" data-act="dupNote">${ic('copy',14)} Duplicate</button><div class="sp"></div><button class="btn pri" data-act="closeModal">Done</button></div>`;
+}
+function mNotes(){
+ const pre=[['setup','tool','Setup / Pre-light',30],['lunch','coffee','Lunch',60,'Placed at your lunch time'],['move','truck','Company Move',30],['break','clock','Break',15],['custom','note','Custom note',10]];
+ return hd('Add to Schedule',esc(DY()?.name||''))+`<div class="sheet-body"><div class="menu">${pre.map(([k,i,t,m,h])=>`<button class="mi" data-act="addNote" data-v="${k}"><span class="ico">${ic(i,17)}</span><span><b>${t}</b><small>${h||fmtMins(m)+' · added to the end, drag to place'}</small></span></button>`).join('')}</div></div>`;
+}
+function mStrip(){
+ const p=P(),d=DY();if(!d)return '';syncDay(p,d);
+ const on=d.sceneIds.map(id=>p.scenes.find(s=>s.id===id)).filter(Boolean);
+ const off=p.scenes.filter(s=>!d.sceneIds.includes(s.id));
+ const item=(sc,isOn)=>{const other=p.days.filter(x=>x.id!==d.id&&x.sceneIds.includes(sc.id));const ex=sc.shots.filter(s=>d.excluded.includes(s.id)).length;
+  return `<div class="strip-item" ${isOn?`data-key="${sc.id}"`:''}>${isOn?`<div class="handle">${ic('grip',14)}</div>`:'<div style="width:12px"></div>'}<div class="snum" style="background:${stripColor(sc)}">${esc(sc.number)}</div>
+  <div class="sbody"><div class="sh">${esc(sceneHead(sc))}</div><div class="ss">${sc.shots.length} shots · ${fmtMins(sceneMins(sc))}${sc.pages?' · '+esc(sc.pages)+' pg':''}${other.length?' · also on '+other.map(o=>esc(o.name)).join(', '):''}</div></div>
+  ${isOn&&ex?`<button class="btn sm" data-act="restore" data-id="${sc.id}">Restore ${ex}</button>`:''}
+  ${isOn?`<button class="iconbtn sm mute" title="Remove from day" data-act="stripRem" data-id="${sc.id}">${ic('x',16)}</button>`:`<button class="btn sm" data-act="stripAdd" data-id="${sc.id}">${ic('plus',13)} Add</button>`}</div>`};
+ return hd('Stripboard',`${esc(d.name)} · ${dateParts(d.date).long}`)+`<div class="sheet-body">
+  <div class="hint">Drag scenes into shooting order. Their shots line up on the day in that order.</div>
+  <div class="strip-h">On this day</div>
+  ${on.length?`<div class="rows" data-sort="strip">${on.map(sc=>`<div class="grp">${item(sc,true)}</div>`).join('')}</div>`:'<div class="hint">No scenes yet — add some below.</div>'}
+  <div class="strip-h">Scenes ${off.length?'':'— all scenes are on this day'}</div>
+  <div class="rows">${off.map(sc=>`<div class="grp">${item(sc,false)}</div>`).join('')}</div>
+ </div><div class="sheet-ft"><div class="sp"></div><button class="btn pri" data-act="closeModal">Done</button></div>`;
+}
+function mSettings(){
+ const p=P(),st=p.settings;
+ return hd('Settings',esc(p.name))+`<div class="sheet-body">
+  <label class="f"><span>Project name</span><input data-b="proj:name" value="${esc(p.name)}"></label>
+  <div class="sec">Shot Categories</div><div class="hint" style="margin:-4px 0 10px">Turn categories on or off. Off categories are hidden from rows, the shot editor and exports.</div>
+  <div class="togs">${CATS.map(([k,l])=>`<label class="tog"><input type="checkbox" data-b="vis:${k}" ${st.vis[k]?'checked':''}>${k==='user'?esc(st.userLabel||l):l}</label>`).join('')}</div>
+  <div class="sec" style="margin-top:20px">Lists</div><div class="hint" style="margin:-4px 0 10px">One item per line.</div>
+  <div class="lists">${Object.keys(LIST_NAMES).map(k=>`<label class="f"><span>${LIST_NAMES[k]}</span><textarea data-b="lists:${k}">${esc(st.lists[k].join('\n'))}</textarea></label>`).join('')}</div>
+  <div class="f3"><label class="f"><span>User category name</span><input data-b="set:userLabel" value="${esc(st.userLabel)}"></label>
+   <label class="f"><span>Default shot time (min)</span><input type="number" min="0" data-b="set:defMins" value="${esc(st.defMins)}"></label>
+   <label class="f"><span>Shot letters</span><label class="tog"><input type="checkbox" data-b="set:skipIO" ${st.skipIO?'checked':''}>Skip I and O</label></label></div>
+  <div class="sec" style="margin-top:6px">Live Mode</div>
+  <div class="f2"><label class="f"><span>Clock offset (minutes)</span><input type="number" data-b="g:offset" value="${esc(S.offset)}"></label>
+  <div class="f"><span>Live clock reads</span><div style="padding:8px 0;font-weight:700">${fmtClock(nowFor(),false)}</div></div></div>
+  <div class="hint">Shift the clock to rehearse Live Mode before the shoot. Leave at 0 on the day.</div>
+ </div><div class="sheet-ft"><div class="sp"></div><button class="btn pri" data-act="closeModal">Done</button></div>`;
+}
+function mExport(){
+ const sc=SC(),d=DY(),tab=S.ui.tab;
+ const mi=(act,v,icn,t,h)=>`<button class="mi" data-act="${act}" data-v="${v}"><span class="ico">${ic(icn,17)}</span><span><b>${t}</b><small>${h}</small></span></button>`;
+ return hd('Export & Share',esc(P().name))+`<div class="sheet-body"><div class="menu">
+  ${tab==='days'&&d?mi('exp','dayPdf','pdf','Shoot day PDF',`${esc(d.name)} schedule, ready to print or send`):''}
+  ${mi('exp','listPdf','pdf','Shot list PDF','Every scene and shot, with storyboards')}
+  ${tab==='scenes'&&sc?mi('exp','scenePdf','pdf',`Scene ${esc(sc.number)} PDF`,'Just this scene'):''}
+  ${tab==='days'&&d?mi('exp','dayCsv','table','Shoot day CSV','Open in Numbers, Excel or Sheets'):''}
+  ${mi('exp','listCsv','table','Shot list CSV','Open in Numbers, Excel or Sheets')}
+  ${mi('exp','json','download','Project file','Back up or share with your crew — they import it')}
+  ${mi('importProj','','upload','Import project file','Add a project from a file')}
+ </div></div>`;
+}
+
+/* ============ drag to reorder ============ */
+let dragging=false,justDragged=0;
+function sortable(box){
+ box.addEventListener('pointerdown',e=>{
+  if(e.button!==0)return;
+  const h=e.target.closest('.handle');if(!h||!box.contains(h))return;
+  const g=h.closest('.grp');if(!g||g.parentElement!==box)return;
+  e.preventDefault();
+  const r=g.getBoundingClientRect(),off=e.clientY-r.top;
+  const ph=document.createElement('div');ph.className='ph';ph.style.height=r.height+'px';g.after(ph);
+  Object.assign(g.style,{position:'fixed',left:r.left+'px',top:r.top+'px',width:r.width+'px',zIndex:60,pointerEvents:'none'});g.classList.add('lift');
+  dragging=true;document.body.classList.add('dragging');
+  const scroller=box.closest('.main,.slist,.sheet-body')||document.scrollingElement;
+  let y=e.clientY,raf;
+  const place=()=>{const sibs=[...box.children].filter(c=>c!==g&&c!==ph&&c.classList.contains('grp'));let before=null;
+   for(const s of sibs){const sr=s.getBoundingClientRect();if(y<sr.top+sr.height/2){before=s;break}}
+   if(before){if(ph.nextElementSibling!==before)box.insertBefore(ph,before)}else if(sibs.length){const last=sibs[sibs.length-1];if(last.nextElementSibling!==ph)last.after(ph)}};
+  const loop=()=>{const sr=scroller.getBoundingClientRect();if(y<sr.top+50)scroller.scrollTop-=10;else if(y>sr.bottom-50)scroller.scrollTop+=10;place();raf=requestAnimationFrame(loop)};
+  raf=requestAnimationFrame(loop);
+  const mv=ev=>{y=ev.clientY;g.style.top=(ev.clientY-off)+'px'};
+  const up=()=>{cancelAnimationFrame(raf);removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);
+   ph.replaceWith(g);g.removeAttribute('style');g.classList.remove('lift');dragging=false;document.body.classList.remove('dragging');justDragged=Date.now();
+   commitOrder(box.dataset.sort,[...box.querySelectorAll('[data-key]')].map(x=>x.dataset.key))};
+  addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up);
+ });
+}
+function commitOrder(kind,keys){
+ const p=P(),reorder=(arr,get)=>{const m=new Map(arr.map(x=>[get(x),x]));const out=keys.map(k=>m.get(k)).filter(Boolean);arr.forEach(x=>{if(!out.includes(x))out.push(x)});return out};
+ if(kind==='scenes')p.scenes=reorder(p.scenes,s=>s.id);
+ else if(kind==='shots'){const sc=SC();sc.shots=reorder(sc.shots,s=>s.id)}
+ else if(kind==='day'){const d=DY();d.items=reorder(d.items,i=>i.id)}
+ else if(kind==='strip'){const d=DY();d.sceneIds=reorder(d.sceneIds,i=>i);rebuildByScenes(p,d);renderModal()}
+ touch();renderApp();
+}
+
+/* ============ actions ============ */
+function openShot(id,day){M={type:'shot',id,day:!!day};renderModal();setTimeout(()=>{const n=$('#modal [data-b="shot:name"]');if(n&&!n.value)n.focus()},30)}
+function curShot(){const p=P();return M&&shotIndex(p)[M.id]}
+function curNote(){const d=DY();return d&&M&&d.items.find(i=>i.id===M.id)}
+function refresh(){touch();renderApp();renderModal()}
+const A={
+ home(){S.ui.view='home';M=null;save();render()},
+ newProj(){const n=prompt('Project name','Untitled Project');if(n===null)return;const p=newProject(n.trim()||'Untitled Project');S.projects.unshift(p);A.openProj({dataset:{id:p.id}});Sync.dirty(p.id)},
+ openProj(el){S.ui={view:'project',pid:el.dataset.id,tab:'scenes',pane:'side',board:false};const p=P();if(p.scenes[0])S.ui.sid=p.scenes[0].id;if(p.days[0])S.ui.did=[...p.days].sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0].id;if(window.innerWidth>820)S.ui.pane='main';save();render()},
+ dupProj(el){const p=S.projects.find(x=>x.id===el.dataset.id);const c=JSON.parse(JSON.stringify(p));c.id=uid();c.name=p.name+' copy';c.updated=Date.now();S.projects.splice(S.projects.indexOf(p)+1,0,c);save();render();Sync.dirty(c.id);toast('Project duplicated')},
+ delProj(el){const p=S.projects.find(x=>x.id===el.dataset.id);if(!confirm(`Delete “${p.name}”? This can't be undone.`))return;S.projects=S.projects.filter(x=>x!==p);save();render();Sync.remove(p.id)},
+ importProj(){$('#fImp').click()},
+ tab(el){S.ui.tab=el.dataset.v;save();renderApp()},
+ pane(el){S.ui.pane=el.dataset.v;renderApp()},
+ view(el){S.ui.board=el.dataset.v==='board';save();renderApp()},
+ selScene(el){S.ui.sid=el.dataset.id;S.ui.pane='main';save();renderApp()},
+ selDay(el){S.ui.did=el.dataset.id;S.ui.pane='main';save();renderApp()},
+ gotoDay(el){S.ui.tab='days';S.ui.did=el.dataset.id;save();renderApp()},
+ addScene(){const p=P(),sc=newScene(p);p.scenes.push(sc);S.ui.tab='scenes';S.ui.sid=sc.id;S.ui.pane='main';touch();renderApp();setTimeout(()=>$('[data-b="scene:loc"]')?.focus(),20)},
+ dupScene(){const p=P(),sc=SC(),c=JSON.parse(JSON.stringify(sc));c.id=uid();c.shots.forEach(s=>s.id=uid());c.number=sc.number+'A';p.scenes.splice(p.scenes.indexOf(sc)+1,0,c);S.ui.sid=c.id;touch();renderApp();toast('Scene duplicated')},
+ delScene(){const p=P(),sc=SC();if(!confirm(`Delete scene ${sc.number} and its ${sc.shots.length} shots?`))return;p.scenes=p.scenes.filter(s=>s!==sc);p.days.forEach(d=>syncDay(p,d));S.ui.sid=p.scenes[0]?.id;touch();renderApp()},
+ addShot(){const p=P(),sc=SC();const s=newShot(p,sc.shots[sc.shots.length-1]);sc.shots.push(s);touch();renderApp();openShot(s.id)},
+ editShot(el){openShot(el.dataset.id,S.ui.tab==='days')},
+ dupShot(){const x=curShot();const c=JSON.parse(JSON.stringify(x.shot));c.id=uid();c.num='';c.link=false;x.scene.shots.splice(x.i+1,0,c);
+  const d=DY();if(M.day&&d){const k=d.items.findIndex(i=>i.id===x.shot.id);d.items.splice(k+1,0,{t:'shot',id:c.id})}
+  M.id=c.id;refresh();toast('Shot duplicated')},
+ delShot(){const x=curShot();if(!confirm('Delete this shot?'))return;x.scene.shots.splice(x.i,1);M=null;P().days.forEach(d=>{delete d.done[x.shot.id]});refresh()},
+ exclShot(){const d=DY();d.excluded.push(M.id);M=null;refresh();toast('Removed from this day — restore it from the stripboard')},
+ setCam(el){curShot().shot.camera=el.dataset.v;refresh()},
+ togGear(el){const s=curShot().shot,g=el.dataset.v;s.gear=s.gear||[];s.gear=s.gear.includes(g)?s.gear.filter(x=>x!==g):[...s.gear,g];refresh()},
+ setUser(el){const s=curShot().shot;s.user=s.user===el.dataset.v?'':el.dataset.v;refresh()},
+ setColor(el){curShot().shot.color=el.dataset.v;refresh()},
+ togFlag(){const s=curShot().shot;s.flag=!s.flag;refresh()},
+ togLink(){const s=curShot().shot;s.link=!s.link;refresh()},
+ bump(el){const s=curShot().shot;s.mins=Math.max(0,(+s.mins||0)+(+el.dataset.v));refresh()},
+ setMins(el){curShot().shot.mins=+el.dataset.v;refresh()},
+ boardUp(){$('#fImg').click()},
+ boardDel(){curShot().shot.board='';refresh()},
+ closeModal(){M=null;renderModal();renderApp()},
+ settings(){M={type:'settings'};renderModal()},
+ export(){M={type:'export'};renderModal()},
+ addDay(){const p=P(),d=newDay(p);p.days.push(d);S.ui.tab='days';S.ui.did=d.id;S.ui.pane='main';touch();renderApp();M={type:'strip'};renderModal()},
+ dupDay(){const p=P(),d=DY(),c=JSON.parse(JSON.stringify(d));c.id=uid();c.name=d.name+' copy';c.done={};c.live=null;c.items.forEach(i=>{if(i.t==='note')i.id=uid()});p.days.push(c);S.ui.did=c.id;touch();renderApp();toast('Shoot day duplicated')},
+ delDay(){const p=P(),d=DY();if(!confirm(`Delete ${d.name}? Scenes and shots stay in the shot list.`))return;p.days=p.days.filter(x=>x!==d);S.ui.did=p.days[0]?.id;touch();renderApp()},
+ strip(){M={type:'strip'};renderModal()},
+ stripAdd(el){const p=P(),d=DY();d.sceneIds.push(el.dataset.id);syncDay(p,d);refresh()},
+ stripRem(el){const p=P(),d=DY(),sc=p.scenes.find(s=>s.id===el.dataset.id);d.sceneIds=d.sceneIds.filter(i=>i!==sc.id);d.excluded=d.excluded.filter(id=>!sc.shots.some(s=>s.id===id));sc.shots.forEach(s=>delete d.done[s.id]);syncDay(p,d);refresh()},
+ restore(el){const p=P(),d=DY(),sc=p.scenes.find(s=>s.id===el.dataset.id);d.excluded=d.excluded.filter(id=>!sc.shots.some(s=>s.id===id));syncDay(p,d);refresh()},
+ noteMenu(){M={type:'notes'};renderModal()},
+ addNote(el){const p=P(),d=DY(),k=el.dataset.v;
+  const pre={setup:['Setup / Pre-light',30,'#ac8e68'],lunch:['Lunch',60,'#30d158'],move:['Company Move',30,'#64d2ff'],break:['Break',15,'#bf5af2'],custom:['',10,'#ac8e68']}[k];
+  const n={t:'note',id:uid(),text:pre[0],mins:pre[1],color:pre[2]};
+  if(k==='lunch'){const pl=dayPlan(p,d);const g=pl.groups.find(g=>g.start>=pl.lunch);if(g)d.items.splice(d.items.indexOf(g.items[0].it),0,n);else d.items.push(n)}else d.items.push(n);
+  M=k==='custom'?{type:'note',id:n.id}:null;refresh();if(k==='custom')setTimeout(()=>$('#modal [data-b="note:text"]')?.focus(),30)},
+ editNote(el){M={type:'note',id:el.dataset.id};renderModal()},
+ bumpN(el){const n=curNote();n.mins=Math.max(0,(+n.mins||0)+(+el.dataset.v));refresh()},
+ setNColor(el){curNote().color=el.dataset.v;refresh()},
+ dupNote(){const d=DY(),n=curNote(),c={...n,id:uid()};d.items.splice(d.items.indexOf(n)+1,0,c);M.id=c.id;refresh();toast('Note duplicated')},
+ delNote(){const d=DY(),n=curNote();d.items=d.items.filter(i=>i!==n);delete d.done[n.id];M=null;refresh()},
+ togDone(el){const d=DY(),k=el.dataset.id,pl=dayPlan(P(),d);if(d.done[k]!=null)delete d.done[k];else d.done[k]=nowFor(pl);touch();renderApp()},
+ completeCur(){const d=DY(),pl=dayPlan(P(),d),L=liveInfo(d,pl);if(L.finished)return;const t=nowFor(pl);L.cur.items.forEach(r=>d.done[r.key]=t);touch();renderApp()},
+ resetDone(){const d=DY();if(!confirm('Clear all completed marks for this day?'))return;d.done={};touch();renderApp()},
+ toggleLive(){const p=P(),d=DY(),pl=dayPlan(p,d),now=isLive(d,pl);d.live=!now;if(!d.live&&Object.keys(d.done).length&&confirm('Leave Live Mode. Also clear completed marks?'))d.done={};touch();renderApp()},
+ exp(el){const k=el.dataset.v,p=P();M=null;renderModal();
+  if(k==='dayPdf')printDay(p,DY());else if(k==='listPdf')printList(p,p.scenes);else if(k==='scenePdf')printList(p,[SC()]);
+  else if(k==='dayCsv')download(fileSafe(p.name+' '+DY().name)+'.csv',csvDay(p,DY()),'text/csv');
+  else if(k==='listCsv')download(fileSafe(p.name)+' shot list.csv',csvList(p),'text/csv');
+  else if(k==='json')download(fileSafe(p.name)+'.shotday.json',JSON.stringify({app:'shotday',version:1,project:p},null,1),'application/json')},
+};
+
+/* ============ export builders ============ */
+const csvQ=v=>{v=String(v??'');return /[",\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v};
+const csv=rows=>rows.map(r=>r.map(csvQ).join(',')).join('\n');
+function csvList(p){const r=[['Scene','Heading','Shot','Nickname','Description','Size','Angle','Movement','Lens','Setup','Camera','Gear',p.settings.userLabel||'Category','Flag','Color','Minutes','Linked','Cast','Notes']];
+ p.scenes.forEach(sc=>sc.shots.forEach((s,i)=>r.push([sc.number,sceneHead(sc),shotNum(p,sc,i),s.name,s.desc,s.size,s.angle,s.move,s.lens,s.setup,s.camera,(s.gear||[]).join('; '),s.user,s.flag?'Yes':'',s.color,s.mins,s.link?'Yes':'',s.cast,s.notes])));return csv(r)}
+function csvDay(p,d){const pl=dayPlan(p,d),r=[['Start','End','Type','Scene','Shot','Nickname / Note','Description','Size','Movement','Lens','Setup','Camera','Minutes','Done']];
+ pl.groups.forEach(g=>g.items.forEach(x=>{const st=fmtClock(g.start,false),en=fmtClock(g.end,false),dn=d.done[x.key]!=null?'Yes':'';
+  if(x.it.t==='note')r.push([st,en,'Note','','',x.it.text,'','','','','','',x.it.mins,dn]);
+  else{const s=x.info.shot;r.push([st,en,'Shot',x.info.scene.number,shotNum(p,x.info.scene,x.info.i),s.name,s.desc,s.size,s.move,s.lens,s.setup,s.camera,s.mins,dn])}}));return csv(r)}
+function doPrint(html){$('#print').innerHTML=html;setTimeout(()=>window.print(),60)}
+function printList(p,scenes){const v=p.settings.vis;
+ const cols=[['#',1],['Shot',1],['Size',v.size],['Angle',v.angle],['Move',v.move],['Lens',v.lens],['SU',v.setup],['Cam',v.camera],['Gear',v.gear],['Time',v.time],['Board',v.board]].filter(c=>c[1]);
+ const h=`<h1>${esc(p.name)} — Shot List</h1><div class="sub">${scenes.length} scene${scenes.length===1?'':'s'} · ${scenes.reduce((a,s)=>a+s.shots.length,0)} shots · ${fmtDur(scenes.reduce((a,s)=>a+sceneMins(s),0))} · printed ${new Date().toLocaleDateString()}</div>`+
+ scenes.map(sc=>`<h2>${esc(sc.number)}. ${esc(sceneHead(sc))}${sc.pages?' · '+esc(sc.pages)+' pg':''}${sc.cast?' · Cast '+esc(sc.cast):''}</h2>${sc.synopsis?`<div class="sub">${esc(sc.synopsis)}</div>`:''}
+ <table><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr>${sc.shots.map((s,i)=>`<tr><td class="b">${esc(shotNum(p,sc,i))}${v.flag&&s.flag?' ★':''}</td><td><span class="b">${esc(s.name)}</span>${v.desc&&s.desc?`<br>${esc(s.desc)}`:''}${s.notes?`<br><i>${esc(s.notes)}</i>`:''}${s.link?'<br><i>Linked with next</i>':''}</td>
+ ${v.size?`<td>${esc(s.size)}</td>`:''}${v.angle?`<td>${esc(s.angle)}</td>`:''}${v.move?`<td>${esc(s.move)}</td>`:''}${v.lens?`<td>${esc(s.lens)}</td>`:''}${v.setup?`<td>${esc(s.setup)}</td>`:''}${v.camera?`<td>${esc(s.camera)}</td>`:''}${v.gear?`<td>${esc((s.gear||[]).join(', '))}</td>`:''}${v.time?`<td>${fmtMins(s.mins)}</td>`:''}${v.board?`<td>${s.board?`<img src="${s.board}">`:''}</td>`:''}</tr>`).join('')}</table>`).join('');
+ doPrint(h)}
+function printDay(p,d){const pl=dayPlan(p,d);
+ const h=`<h1>${esc(p.name)} — ${esc(d.name)}</h1><div class="sub">${dateParts(d.date).long} · Call ${fmtClock(toMin(d.call),false)} · Lunch ${fmtClock(toMin(d.lunch),false)} · Wrap ${fmtClock(toMin(d.wrap),false)} · Scheduled ${fmtDur(pl.used)} of ${fmtDur(pl.avail)}${pl.used>pl.avail?` (${fmtDur(pl.used-pl.avail)} over)`:''}</div>
+ <table><tr><th>Time</th><th>Sc</th><th>Shot</th><th>Description</th><th>Size</th><th>Move</th><th>Lens</th><th>SU</th><th>Cam</th><th>Min</th></tr>
+ ${pl.groups.map(g=>g.items.map((x,k)=>x.it.t==='note'?`<tr class="pn"><td class="b">${fmtClock(g.start,false)}</td><td></td><td></td><td colspan="6">${esc(x.it.text)}</td><td>${fmtMins(x.it.mins)}</td></tr>`
+  :`<tr class="${d.done[x.key]!=null?'pd':''}"><td class="b">${k?'↳':fmtClock(g.start,false)}</td><td>${esc(x.info.scene.number)}</td><td class="b">${esc(shotNum(p,x.info.scene,x.info.i))}</td><td><span class="b">${esc(x.info.shot.name)}</span>${x.info.shot.desc?' — '+esc(x.info.shot.desc):''}</td><td>${esc(x.info.shot.size)}</td><td>${esc(x.info.shot.move)}</td><td>${esc(x.info.shot.lens)}</td><td>${esc(x.info.shot.setup)}</td><td>${esc(x.info.shot.camera)}</td><td>${fmtMins(x.info.shot.mins)}</td></tr>`).join('')).join('')}
+ <tr><td class="b">${fmtClock(pl.end,false)}</td><td colspan="9" class="b">Planned wrap</td></tr></table>`;
+ doPrint(h)}
+
+/* ============ crew sync (Google Drive via Apps Script) ============ */
+const RO_OK=new Set(['home','openProj','tab','pane','view','selScene','selDay','gotoDay','closeModal','export','exp','editShot','editNote','strip','settings','syncPanel','syncConnect','syncDisconnect','copyLink']);
+let needsRender=false;
+const isTyping=()=>{const a=document.activeElement;return !!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))};
+function softRender(){if(dragging||isTyping()){needsRender=true;return}renderApp();if(M)renderModal()}
+function applyRole(){document.body.classList.toggle('ro',Sync.ro())}
+function syncCall(q){
+ q=Object.assign({},q,{code:SY.code});
+ if(HOSTED)return new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej).api(q));
+ return fetch(SY.url,{method:'POST',body:JSON.stringify(q),credentials:'omit'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()});
+}
+/* three-way merge: keeps both your edits and other editors' edits to the same project */
+const isObj=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+const same=(a,b)=>a===b||JSON.stringify(a)===JSON.stringify(b);
+const idArr=a=>Array.isArray(a)&&a.length>0&&a.every(x=>isObj(x)&&typeof x.id==='string');
+function merge3(base,mine,theirs){
+ if(same(mine,base))return theirs;
+ if(same(theirs,base)||same(mine,theirs))return mine;
+ if(isObj(mine)&&isObj(theirs)){
+  const b=isObj(base)?base:{},out={};
+  new Set([...Object.keys(b),...Object.keys(theirs),...Object.keys(mine)]).forEach(k=>{const v=merge3(b[k],mine[k],theirs[k]);if(v!==undefined)out[k]=v});
+  return out;
+ }
+ if(Array.isArray(mine)&&Array.isArray(theirs)&&(idArr(mine)||idArr(theirs)||idArr(base))){
+  const b=Array.isArray(base)?base:[],bm=new Map(b.map(x=>[x.id,x])),mm=new Map(mine.map(x=>[x.id,x])),tm=new Map(theirs.map(x=>[x.id,x]));
+  const mineMoved=!same(b.map(x=>x.id).filter(id=>mm.has(id)),mine.map(x=>x.id).filter(id=>bm.has(id)));
+  const lead=mineMoved?mine:theirs,other=mineMoved?theirs:mine;
+  const order=lead.map(x=>x.id);
+  other.forEach((x,i)=>{if(order.includes(x.id)||bm.has(x.id))return;const prev=i>0?other[i-1].id:null;order.splice(prev?order.indexOf(prev)+1:0,0,x.id)});
+  return order.filter(id=>!(bm.has(id)&&(!mm.has(id)||!tm.has(id)))).map(id=>{const m=mm.get(id),t=tm.get(id);return m&&t?merge3(bm.get(id),m,t):(m||t)});
+ }
+ return mine;
+}
+const Sync={
+ state:'off',msg:'',bases:{},pending:new Set(),pushing:false,timer:null,pt:null,
+ on(){return syncConfigured()},
+ can(){return this.on()&&SY.role==='edit'},
+ ro(){return this.on()&&SY.role==='view'},
+ status(s,msg=''){this.state=s;this.msg=msg;document.querySelectorAll('.syncpill').forEach(e=>e.outerHTML=syncPill())},
+ async start(){
+  clearInterval(this.timer);applyRole();
+  if(!this.on()){this.status('off');return}
+  this.status('connecting');
+  try{
+   const r=await syncCall({a:'hello'});
+   if(r.error){this.status('error',r.error==='bad_code'?'That code was not accepted. Check the link or code.':r.error);if(M&&M.type==='sync')renderModal();return}
+   SY.role=r.role;SY.links=r.links?pageLinks(r.links):null;persistSync();applyRole();render();
+   await this.pull(true);
+  }catch(e){this.status('offline',"Can't reach the crew server. Changes are kept on this device.")}
+  this.timer=setInterval(()=>{if(!document.hidden)this.pull()},4000);
+  if(M&&M.type==='sync')renderModal();
+ },
+ dirty(pid){
+  if(!this.can()||SY.localOnly[pid])return;
+  SY.dirty[pid]=1;persistSync();this.pending.add(pid);
+  clearTimeout(this.pt);this.pt=setTimeout(()=>this.flush(),600);
+  if(this.state!=='saving')this.status('saving');
+ },
+ async remove(pid){
+  delete SY.dirty[pid];this.pending.delete(pid);
+  if(!this.can()||SY.localOnly[pid]){delete SY.localOnly[pid];persistSync();return}
+  try{const r=await syncCall({a:'delete',id:pid});if(r.error)throw new Error(r.error);delete SY.vers[pid];persistSync()}
+  catch(e){toast("Couldn't delete it on the crew server. It may come back on other devices.")}
+ },
+ async flush(){
+  if(this.pushing)return;this.pushing=true;
+  try{
+   while(this.pending.size){const pid=[...this.pending][0];this.pending.delete(pid);await this.push(pid)}
+   this.status('ok');
+  }catch(e){
+   Object.keys(SY.dirty).forEach(id=>this.pending.add(id));
+   this.status(String(e.message)==='read_only'?'error':'offline',String(e.message)==='read_only'?'This code is view only.':"Can't reach the crew server. Your changes will upload when it's back.");
+  }
+  this.pushing=false;
+ },
+ async push(pid){
+  const p=S.projects.find(x=>x.id===pid);if(!p){delete SY.dirty[pid];return}
+  const sent=JSON.stringify(p);
+  const r=await syncCall({a:'save',project:JSON.parse(sent),base:SY.vers[pid]||0});
+  if(r.ok){
+   SY.vers[pid]=r.ver;this.bases[pid]=sent;
+   const now=S.projects.find(x=>x.id===pid);
+   if(now&&JSON.stringify(now)!==sent)this.pending.add(pid);else delete SY.dirty[pid];
+   persistSync();
+  }else if(r.conflict){
+   this.mergeIn(pid,r.data,r.ver);this.pending.add(pid);save();softRender();
+  }else if(r.deleted){
+   S.projects=S.projects.filter(x=>x.id!==pid);delete SY.dirty[pid];delete SY.vers[pid];persistSync();save();softRender();
+   toast('That project was deleted by another editor');
+  }else throw new Error(r.error||'save_failed');
+ },
+ mergeIn(pid,remote,ver){
+  const i=S.projects.findIndex(x=>x.id===pid);
+  if(i<0)S.projects.push(remote);
+  else if(!SY.dirty[pid])S.projects[i]=remote;
+  else{const base=this.bases[pid]?JSON.parse(this.bases[pid]):remote;S.projects[i]=merge3(base,S.projects[i],remote)}
+  SY.vers[pid]=ver;this.bases[pid]=JSON.stringify(remote);
+ },
+ async pull(first){
+  if(this.pushing||this.pending.size||dragging)return;
+  const wasFresh=Object.keys(SY.vers).length===0;
+  let r;
+  try{r=await syncCall({a:'pull',vers:SY.vers})}catch(e){this.status('offline',"Can't reach the crew server.");return}
+  if(r.error){this.status('error',r.error==='bad_code'?'That code was not accepted.':r.error);return}
+  if(this.pushing||this.pending.size)return;
+  let changed=false;
+  Object.keys(r.projects||{}).forEach(pid=>{if(SY.localOnly[pid])return;this.mergeIn(pid,r.projects[pid].data,r.projects[pid].ver);if(SY.dirty[pid])this.pending.add(pid);changed=true});
+  (r.deleted||[]).forEach(pid=>{S.projects=S.projects.filter(x=>x.id!==pid);delete SY.vers[pid];delete SY.dirty[pid];changed=true});
+  if(first&&this.can()){
+   const local=S.projects.filter(p=>SY.vers[p.id]==null&&!SY.localOnly[p.id]);
+   if(local.length){
+    const names=local.map(p=>'• '+p.name).join('\n');
+    if(!wasFresh||confirm(`Share ${local.length} project${local.length>1?'s':''} from this device with your crew?\n\n${names}\n\nCancel keeps ${local.length>1?'them':'it'} on this device only.`))local.forEach(p=>{SY.dirty[p.id]=1;this.pending.add(p.id)});
+    else local.forEach(p=>SY.localOnly[p.id]=1);
+    changed=true;
+   }
+  }
+  if(first&&!this.can())S.projects.forEach(p=>{if(SY.vers[p.id]==null&&!SY.localOnly[p.id]){SY.localOnly[p.id]=1;changed=true}});
+  persistSync();
+  if(changed){save();softRender()}
+  if(this.pending.size)this.flush();else this.status('ok');
+ },
+};
+function pageLinks(L){if(!WEBPAGE)return L;const base=location.origin+location.pathname,k=u=>new URL(u).searchParams.get('k');return{edit:base+'?k='+k(L.edit),view:base+'?k='+k(L.view)}}
+function syncPill(){
+ const s=Sync.on()?Sync.state:'off';
+ const map={off:['','Crew Sync'],connecting:['wait','Connecting…'],ok:['ok',SY.role==='view'?'Live · View only':'Live · Synced'],saving:['wait','Saving…'],offline:['bad','Offline'],error:['bad','Sync problem']};
+ const [c,t]=map[s]||map.off;
+ return `<button class="syncpill ${c}" data-act="syncPanel" title="${esc(Sync.msg||'Crew Sync')}"><i></i><span>${t}</span></button>`;
+}
+function mSync(){
+ const on=Sync.on(),L=SY.links;
+ const link=(label,url,hint)=>`<div class="f"><span>${label}</span><div class="linkrow"><input readonly value="${esc(url)}"><button class="btn" data-act="copyLink" data-v="${esc(url)}">Copy</button></div><span class="hint" style="text-transform:none;letter-spacing:0;font-weight:500">${hint}</span></div>`;
+ const roleTxt=SY.role==='edit'?'You can edit. Every change uploads to your Google Drive and reaches the crew within a few seconds.':SY.role==='view'?'View only. Changes from your editors appear here within a few seconds.':'';
+ return hd('Crew Sync','Live updates through your Google Drive')+`<div class="sheet-body">
+  ${on?`<div class="f"><span>Status</span><div class="hrow">${syncPill()}<span class="hint">${esc(Sync.msg||roleTxt)}</span></div></div>`:`<div class="hint" style="margin-bottom:14px">Crew Sync keeps your projects in a <b>Shotday Sync</b> folder in your Google Drive. Your crew opens a link on any phone or laptop and sees every change within a few seconds — no accounts needed. See <b>crew-sync/SETUP.md</b> to set up your server (about 5 minutes).</div>`}
+  ${L?link('Crew link — view only',L.view,'Send this to your crew. They follow along live but can’t change anything.')+link('Editor link',L.edit,'Only for people who should change the schedule, like your 1st AD. Anyone with this link can edit.'):''}
+  ${HOSTED||WEBPAGE?'':`<label class="f"><span>Crew server address</span><input id="syUrl" value="${esc(SY.url)}" placeholder="https://script.google.com/macros/s/…/exec"></label>`}
+  <label class="f"><span>Code</span><input id="syCode" value="${esc(SY.code)}" placeholder="Your editor or crew code" autocomplete="off"></label>
+ </div><div class="sheet-ft">${on?`<button class="btn danger" data-act="syncDisconnect">Disconnect this device</button>`:''}<div class="sp"></div><button class="btn pri" data-act="syncConnect">${on?'Reconnect':'Connect'}</button></div>`;
+}
+Object.assign(A,{
+ syncPanel(){M={type:'sync'};renderModal()},
+ syncConnect(){
+  const u=$('#syUrl'),c=$('#syCode');
+  const url=u?u.value.trim():'',code=(c?c.value:'').trim();
+  if(!HOSTED&&!WEBPAGE&&!/^https?:\/\//.test(url)){toast('Paste the web app address from Google Apps Script');return}
+  if(!code){toast('Enter your code');return}
+  if(!HOSTED&&!WEBPAGE)SY.url=url;
+  if(code!==SY.code){SY.role=null;SY.links=null}
+  SY.code=code;persistSync();Sync.start();
+ },
+ syncDisconnect(){
+  if(!confirm('Stop syncing on this device? Your projects stay on this device.'))return;
+  clearInterval(Sync.timer);Sync.pending.clear();
+  SY=Object.assign(SY,{code:'',role:null,vers:{},dirty:{},localOnly:{},links:null});persistSync();
+  Sync.status('off');applyRole();render();
+ },
+ copyLink(el){const v=el.dataset.v;(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>toast('Link copied')).catch(()=>prompt('Copy this link:',v))},
+});
+
+/* ============ events ============ */
+document.addEventListener('click',e=>{
+ if(Date.now()-justDragged<250)return;
+ if(e.target.closest('.handle'))return;
+ const el=e.target.closest('[data-act]');if(!el)return;
+ const act=el.dataset.act,fn=A[act];if(!fn)return;e.stopPropagation();
+ if(Sync.ro()&&!RO_OK.has(act)){toast('View only — your editors make the changes');return}
+ fn(el,e)
+});
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&M){A.closeModal();return}
+ if(e.key==='Enter'&&e.target.matches('.pcard'))A.openProj(e.target);
+});
+function bind(el,commit){
+ const[k,f]=el.dataset.b.split(':');const p=P();
+ if(Sync.ro()&&k!=='g'){if(commit)render();return}
+ const o={proj:p,scene:SC(),day:DY(),shot:curShot()?.shot,note:curNote(),set:p?.settings,vis:p?.settings.vis,lists:p?.settings.lists,g:S}[k];if(!o)return;
+ let v=el.type==='checkbox'?el.checked:el.value;
+ if(el.type==='number')v=v===''?'':+v;
+ if(k==='lists'){if(!commit)return;v=el.value.split('\n').map(s=>s.trim()).filter(Boolean);if(!v.length)return}
+ if(k==='scene'&&f==='loc')v=v.toUpperCase();
+ o[f]=v;touch();
+ if(commit){if(M){renderApp();if(M.type==='settings'&&(k==='vis'||k==='g'))renderModal()}else queueApp()}
+}
+let rq;function queueApp(){clearTimeout(rq);rq=setTimeout(()=>{const a=document.activeElement,b=a&&a.dataset&&a.dataset.b;let ss,se;try{ss=a.selectionStart;se=a.selectionEnd}catch(_){}
+ renderApp();if(b){const n=document.querySelector(`#app [data-b="${b}"]`);if(n){n.focus();try{n.setSelectionRange(ss,se)}catch(_){}}}},0)}
+document.addEventListener('input',e=>{if(e.target.dataset?.b)bind(e.target,false)});
+document.addEventListener('change',e=>{if(e.target.dataset?.b)bind(e.target,true)});
+async function readImg(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const sc=Math.min(1,720/im.width);const c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.8))};im.onerror=rej;im.src=r.result};r.readAsDataURL(file)})}
+$('#fImg').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';const x=curShot();if(!f||!x||Sync.ro())return;x.shot.board=await readImg(f);refresh()});
+document.addEventListener('paste',async e=>{if(!M||M.type!=='shot'||Sync.ro())return;const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));if(!it)return;e.preventDefault();curShot().shot.board=await readImg(it.getAsFile());refresh();toast('Storyboard added')});
+$('#fImp').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);const p=j.project||j;if(!p||!Array.isArray(p.scenes))throw 0;
+ p.id=uid();p.settings=Object.assign(defSettings(),p.settings||{});p.days=p.days||[];p.updated=Date.now();
+ if(S.projects.some(x=>x.name===p.name))p.name+=' (imported)';S.projects.unshift(p);M=null;save();A.openProj({dataset:{id:p.id}});Sync.dirty(p.id);toast('Project imported')}catch(_){alert('That file is not a Shotday project.')}};r.readAsText(f)});
+
+/* live tick */
+let tick=0;
+setInterval(()=>{tick++;
+ if(needsRender&&!dragging&&!isTyping()){needsRender=false;renderApp();if(M)renderModal()}
+ if(S.ui.view!=='project'||S.ui.tab!=='days'||dragging)return;const p=P(),d=DY();if(!p||!d)return;
+ const pl=dayPlan(p,d),live=isLive(d,pl),c=$('#clocks');
+ if(c&&live)c.innerHTML=clocksHTML(p,d,pl);
+ const editing=document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#app')&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+ if((tick%15===0||(!!c&&live!==!!c.innerHTML))&&!M&&!editing)renderApp()
+},1000);
+
+render();
+applyRole();
+Sync.start();
+</script>
+</body>
+</html>
